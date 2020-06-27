@@ -1,0 +1,44 @@
+{
+  "name": "daan-retard",
+  "version": "0.1.0",
+  "description": "靠北大安4.0官方網站",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yangszwei/daan-retard.git"
+  },
+  "author": "yangszwei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yangszwei/daan-retard/issues"
+  },
+  "homepage": "https://github.com/yangszwei/daan-retard#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "gulp-postcss": "^8.0.0",
+    "gulp-print": "^5.0.2",
+    "gulp-rename": "^2.0.0",
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-helmet": "^5.2.0",
+    "koa-static": "^5.0.0",
+    "koa-views": "^6.3.0",
+    "postcss-extend": "^1.0.5",
+    "postcss-import": "^12.0.1",
+    "pug": "^3.0.0",
+    "vinyl-paths": "^3.0.1"
+  },
+  "dependencies": {
+    "@koa/router": "^9.0.1",
+    "autoprefixer": "^9.8.4",
+    "cssnano": "^4.1.10",
+    "del": "^5.1.0",
+    "gulp": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-terser": "^1.2.0",
+    "precss": "^4.0.0"
+  }
+}
