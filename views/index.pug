@@ -2,4 +2,39 @@ doctype html
 html
     head
         include head
+        link(rel="stylesheet", href="/stylesheets/index.css")
+        script(src="/javascripts/index.js")
     body
+        #menu.card
+            header
+                img(src="/images/icon.png")
+                h5 靠北大安4.0
+                p.meta v#{version}
+            main
+                a#register.button.primary(href="/user/register") 建立帳戶
+                a#post.button(href="/post") 投稿
+                a#login(href="/user/login") 登入
+            footer
+                p.license
+                    a(href="https://github.com/yangszwei", target="_blank") yangszwei
+                    | #{year}
+                a(href="https://www.facebook.com/daanretard", target="_blank")
+                    .iconify(data-icon="fa-brands:facebook", style="color: #3b5998")
+                a(href="https://github.com/yangszwei/daan-retard", target="_blank")
+                    .iconify(data-icon="fa-brands:github")
+        #user_prompt.card
+            header
+                h4 登入即可使用下列功能
+            main
+                .item
+                    .iconify(data-icon="fa-regular:clock")
+                    p.title 追蹤貼文狀態
+                .item
+                    .iconify(data-icon="fa-regular:comment")
+                    p.title 匿名回覆留言（開發中）
+                .item
+                    .iconify(data-icon="fa-brands:facebook-messenger")
+                    p.title 以Messenger投稿（開發中）
+            footer
+                a.button.primary(href="/user/register") 建立帳戶
+                a.text(href="/post") 跳過

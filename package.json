@@ -4,6 +4,8 @@
   "description": "靠北大安4.0官方網站",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "watch": "gulp watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -26,6 +28,7 @@
     "koa-helmet": "^5.2.0",
     "koa-static": "^5.0.0",
     "koa-views": "^6.3.0",
+    "mongodb": "^3.5.9",
     "postcss-extend": "^1.0.5",
     "postcss-import": "^12.0.1",
     "pug": "^3.0.0",
@@ -37,6 +40,7 @@
     "cssnano": "^4.1.10",
     "del": "^5.1.0",
     "gulp": "^4.0.2",
+    "gulp-imagemin": "^7.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-terser": "^1.2.0",
     "precss": "^4.0.0"

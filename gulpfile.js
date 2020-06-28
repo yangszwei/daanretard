@@ -11,15 +11,16 @@ const { task, src, dest, series, parallel, watch } = require("gulp"),
     autoprefixer = require("autoprefixer"),
     del = require("del"),
     terser = require("gulp-terser"),
-    sync = require("browser-sync");
+    sync = require("browser-sync"),
+    imagemin = require('gulp-imagemin');
 
-task("css:delete", () => {
+task("stylesheets:delete", () => {
     return src("public/stylesheets/*")
         .pipe(print())
         .pipe(vinylPaths(del))
 });
 
-task("css:build", () => {
+task("stylesheets:build", () => {
     return src("src/stylesheets/*.pcss")
         .pipe(print())
         .pipe(sourcemaps.init())
@@ -32,15 +33,15 @@ task("css:build", () => {
         .pipe(dest("public/stylesheets"));
 });
 
-task("css", series("css:delete", "css:build"));
+task("stylesheets", series("stylesheets:delete", "stylesheets:build"));
 
-task("js:delete", () => {
+task("javascripts:delete", () => {
     return src("public/javascripts/*")
         .pipe(print())
         .pipe(vinylPaths(del));
 });
 
-task("js:build", () => {
+task("javascripts:build", () => {
     return src("src/javascripts/*.js")
         .pipe(print())
         .pipe(sourcemaps.init())
@@ -49,9 +50,23 @@ task("js:build", () => {
         .pipe(dest("public/javascripts"));
 });
 
-task("js", series("js:delete", "js:build"));
+task("javascripts", series("javascripts:delete", "javascripts:build"));
 
-task("build", parallel("css", "js"));
+task("images:delete", () => {
+    return src("public/images/*")
+        .pipe(print())
+        .pipe(vinylPaths(del));
+});
+
+task("images:build", () => {
+    return src("src/images/*")
+        .pipe(imagemin())
+        .pipe(dest('public/images'));
+});
+
+task("images", series("images:delete", "images:build"));
+
+task("build", parallel("stylesheets", "javascripts", "images"));
 
 task("reload", (done) => {{
     sync.reload();
@@ -61,7 +76,7 @@ task("reload", (done) => {{
 task("watch", () => {
     let { port } = require("./config").server;
     sync.init({ proxy: `http://localhost:${port}` });
-    watch("src/javascripts/*.js", series("js", "reload"));
-    watch("src/stylesheets/*.pcss", series("css", "reload"));
+    watch("src/javascripts/*.js", series("javascripts", "reload"));
+    watch("src/stylesheets/*.pcss", series("stylesheets", "reload"));
     watch("views/*.pug", series("reload"));
 });
