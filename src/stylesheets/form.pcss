@@ -1,0 +1,33 @@
+@import "color.pcss";
+
+.form .controls {
+    width: 100%;
+    margin: 2em .2em;
+    label {
+        font-size: 0.8em;
+        opacity: 0.95;
+        padding: 0.2em 0;
+        display: block;
+    }
+    input {
+        width: 100%;
+        font-size: 1em;
+        padding: 0.4em 0;
+        outline: 0;
+        border: 0;
+        border-bottom: solid 2px $blur;
+        border-radius: 0;
+        display: block;
+        box-sizing: border-box;
+        &:focus {
+            border-color: $link-text;
+        }
+    }
+    .status {
+        float: right;
+        font-size: 0.8em;
+        opacity: 0.95;
+        padding: 0.2em 0;
+        display: block;
+    }
+}

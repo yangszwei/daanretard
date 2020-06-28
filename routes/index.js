@@ -4,9 +4,11 @@ const router = new Router();
 
 router.get("/", async (ctx) => {
     await ctx.render("index", {
-        year: "2020",
+        year: new Date().getFullYear().toString(),
         version: app.version
     });
 });
+
+router.use("/user", require("./user").routes());
 
 module.exports = router;

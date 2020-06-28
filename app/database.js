@@ -1,0 +1,18 @@
+const { database } = require("../config").external;
+const mongodb = require("mongodb");
+const client = new mongodb.MongoClient(getDatabaseUri(), {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
+
+function getDatabaseUri() {
+    const { user, password, host, port } = database;
+    return `mongodb://${user}:${password}@${host}:${port}`;
+}
+
+(async () => {
+    await client.connect();
+    module.exports = (name) => {
+        return client.db(database.name).collection(name);
+    };
+})();
