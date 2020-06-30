@@ -1,0 +1,50 @@
+@import "../basic.pcss";
+@import "../form.pcss";
+
+@define-extend center-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+body {
+    @extend center-flex;
+    background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url("/images/background.jpg") no-repeat center fixed;
+    background-size: cover;
+}
+
+.card {
+    @extend center-flex;
+    justify-content: flex-end;
+    width: 22em;
+    max-height: 90%;
+    max-width: 90%;
+    padding: 0;
+    & > div {
+        width: 100%;
+    }
+    header {
+        @extend center-flex;
+        flex-grow: 1;
+        padding: 2em 1.4em 0 1.4em;
+    }
+    main {
+        @extend center-flex;
+        padding: 2em 1.4em;
+        width: 100%;
+        box-sizing: border-box;
+        .button {
+            margin: .2em;
+        }
+    }
+    footer {
+        @extend center-flex;
+        padding: 0 1.4em 2em 1.4em;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .form {
+        width: 100%;
+    }
+}

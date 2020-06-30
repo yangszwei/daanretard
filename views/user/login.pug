@@ -1,0 +1,38 @@
+doctype html
+html
+    head
+        include ../head
+        include ../graph
+        link(rel="stylesheet", href="/stylesheets/user/login.css")
+        script(src="/javascripts/user/login.js")
+    body
+        .card
+            .login
+                header
+                    h4 登入
+                main
+                    .form
+                        .controls
+                            label 電子郵件
+                            input#email(type="email")
+                            span.status(style="color: red")
+                        .controls
+                            label 密碼
+                            input#password(type="password")
+                            span.status(style="color: red")
+                        .controls
+                            button#login.primary 登入
+                            span.status(style="color: red")
+                        .controls
+                            a.status(href="/user/recover") 忘記密碼
+                            a.status(href="/user/register") 建立帳戶
+                footer
+                    .fb-login-button(
+                        data-size="large",
+                        data-button-type="login_with",
+                        data-layout="default",
+                        data-auto-logout-link="false",
+                        data-use-continue-as="false",
+                        data-width="",
+                        data-scope="public_profile, email"
+                    )

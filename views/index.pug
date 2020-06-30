@@ -12,8 +12,9 @@ html
                 p.meta v#{version}
             main
                 // TODO: use different menu when user is valid
-                a#register.button.primary(href="/user/auth") 登入
+                a#register.button.primary(href="/user/register") 建立帳號
                 a#post.button(href="/post") 投稿
+                a#login(href="/user/login") 登入
             footer
                 p.license
                     a(href="https://github.com/yangszwei", target="_blank") yangszwei
@@ -31,10 +32,10 @@ html
                     p.title 追蹤貼文狀態
                 .item
                     .iconify(data-icon="fa-regular:comment")
-                    p.title 匿名回覆留言（開發中）
+                    p.title 匿名回覆留言
                 .item
                     .iconify(data-icon="fa-brands:facebook-messenger")
-                    p.title 以Messenger投稿（開發中）
+                    p.title 以Messenger投稿（需登入Facebook帳戶）
             footer
-                a.button.primary(href="/user/auth") 登入
+                a.button.primary(href="/user/register") 建立帳號
                 a.text(href="/post") 跳過

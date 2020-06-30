@@ -10,9 +10,12 @@ function getDatabaseUri() {
     return `mongodb://${user}:${password}@${host}:${port}`;
 }
 
-(async () => {
-    await client.connect();
-    module.exports = (name) => {
+module.exports = {
+    client: client,
+    connect: async () => {
+        return await client.connect();
+    },
+    collection: (name) => {
         return client.db(database.name).collection(name);
-    };
-})();
+    }
+};

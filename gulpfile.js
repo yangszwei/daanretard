@@ -21,7 +21,7 @@ task("stylesheets:delete", () => {
 });
 
 task("stylesheets:build", () => {
-    return src("src/stylesheets/*.pcss")
+    return src("src/stylesheets/**/*.pcss")
         .pipe(print())
         .pipe(sourcemaps.init())
         .pipe(postcss([
@@ -42,7 +42,7 @@ task("javascripts:delete", () => {
 });
 
 task("javascripts:build", () => {
-    return src("src/javascripts/*.js")
+    return src("src/javascripts/**/*.js")
         .pipe(print())
         .pipe(sourcemaps.init())
         .pipe(terser())
@@ -60,6 +60,7 @@ task("images:delete", () => {
 
 task("images:build", () => {
     return src("src/images/*")
+        .pipe(print())
         .pipe(imagemin())
         .pipe(dest('public/images'));
 });
@@ -74,9 +75,9 @@ task("reload", (done) => {{
 }})
 
 task("watch", () => {
-    let { port } = require("./config").server;
-    sync.init({ proxy: `http://localhost:${port}` });
-    watch("src/javascripts/*.js", series("javascripts", "reload"));
-    watch("src/stylesheets/*.pcss", series("stylesheets", "reload"));
+    let { browserSync } = require("./config").external;
+    sync.init(browserSync);
+    watch("src/javascripts/**/*.js", series("javascripts", "reload"));
+    watch("src/stylesheets/**/*.pcss", series("stylesheets", "reload"));
     watch("views/*.pug", series("reload"));
 });
