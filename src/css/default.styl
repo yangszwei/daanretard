@@ -156,6 +156,32 @@ input
     &:focus
         border-color primary
 
+input[type="file"]
+    position absolute
+    width 1px
+    height 1px
+    padding 0
+    margin -1px
+    overflow hidden
+    clip rect(0,0,0,0)
+    border 0
+
+textarea
+    outline 0
+    min-height 12em
+    width 100%
+    border 2px solid
+    border-color default-text
+    border-radius 0
+    display block
+    font-size 0.95em
+    background-color default
+    margin 0.4em 0
+    padding 0.4em
+    resize vertical
+    &:focus
+        border-color primary
+
 .iconify
     font-size 2.4em
 
@@ -185,6 +211,10 @@ input
     color primary-text
     background-color primary
 
+.secondary
+    color secondary-text
+    background-color secondary
+
 .error-text
     color red
 
@@ -196,6 +226,11 @@ input
     .form-controls button
         width 100%
         margin: 1em 0
+    .form-controls label.button
+        width 100%
+        margin: 0.4em 0
+        display block
+        cursor pointer
 
 .center
     display flex

@@ -5,8 +5,9 @@ const Koa = require("koa"),
     assets = require("koa-static"),
     views = require("koa-views"),
     path = require("path"),
-    helmet = require("koa-helmet")
+    helmet = require("koa-helmet"),
     database = require("./app/database"),
+    user = require("./app/user-auth"),
     json = require("./app/json");
 const app = new Koa(),
     router = require("./routes/index");
@@ -17,11 +18,12 @@ async function initApp() {
     app.use(assets("public"));
     app.use(views(path.join(__dirname, "views"), { extension: "pug" }));
     app.use(json());
+    await database.connect();
+    app.use(user());
     app.use(router.routes());
     app.use(router.allowedMethods());
     app.proxy = server.proxy;
     app.keys = security.keys;
-    await database.connect();
 }
 
 function startApp() {

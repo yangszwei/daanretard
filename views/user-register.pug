@@ -2,13 +2,16 @@ doctype html
 html
     head
         include head
-        include facebook_sdk
-        script(src="/js/user_login.js")
+        include facebook-sdk
+        script(src="/js/user-register.js")
     body
         include navbar
         main
-            h4.page_title 登入
-            #login.form
+            h4.page_title 建立帳戶
+            #register.form
+                .form-controls
+                    label(for="username") 姓名
+                    input#username(name="username", type="text")
                 .form-controls
                     label(for="email") 電子郵件
                     input#email(name="email", type="email")
@@ -16,8 +19,8 @@ html
                     label(for="password") 密碼
                     input#password(name="password", type="password")
                 .form-controls.center
-                    button#submit.button.primary 登入
-                    a.link(href="/user/recover") 重設密碼
+                    button#submit.button.primary 建立帳戶
+                    a.link(href="/user/login") 登入
                 .form-controls.center
                     p.form-message
                 .form-controls.center

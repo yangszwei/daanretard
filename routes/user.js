@@ -4,19 +4,35 @@ const Router = require("@koa/router"),
 const User = require("../app/user");
 const router = new Router();
 
+router.get("/", async (ctx) => {
+    ctx.redirect(ctx.user ? "/user/me" : "/user/register");
+});
+
 router.get("/login", async (ctx) => {
-    await ctx.render("user_login", {
-        title: "登入",
-        appId: facebook.appId
-    });
+    if (ctx.user) {
+        ctx.redirect("/user/me");
+    } else {
+        await ctx.render("user-login", {
+            title: "登入",
+            appId: facebook.appId
+        });
+    }
 });
 
 router.get("/register", async (ctx) => {
-    await ctx.render("user_register", {
-        title: "建立帳號",
-        appId: facebook.appId
-    });
+    if (ctx.user) {
+       ctx.redirect("/user/me");
+    } else {
+        await ctx.render("user-register", {
+            title: "建立帳號",
+            appId: facebook.appId
+        });
+    }
 });
+
+router.get("/me", async (ctx) => {
+    ctx.body = "me";
+})
 
 router.post("/login", async (ctx) => {
     try {

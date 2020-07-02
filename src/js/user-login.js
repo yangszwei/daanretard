@@ -1,9 +1,5 @@
-import {
-    setFormMessage,
-    POST,
-    getQueryVariable,
-    initFacebookButton
-} from "./user_auth";
+import { setFormMessage, POST, getQueryVariable } from "./form";
+import { initFacebookButton } from "./user-auth";
 
 function initLoginButton() {
     const submit = document.getElementById("submit"),
