@@ -2,40 +2,19 @@ doctype html
 html
     head
         include head
-        link(rel="stylesheet", href="/stylesheets/index.css")
-        script(src="/javascripts/index.js")
+        link(rel="stylesheet", href="/css/index.css")
+        script(src="/js/index.js")
     body
-        #menu.card
+        include navbar
+        main
             header
-                img(src="/images/icon.png")
-                h5 靠北大安4.0
-                p.meta v#{version}
-            main
-                // TODO: use different menu when user is valid
-                a#register.button.primary(href="/user/register") 建立帳號
-                a#post.button(href="/post") 投稿
-                a#login(href="/user/login") 登入
-            footer
-                p.license
-                    a(href="https://github.com/yangszwei", target="_blank") yangszwei
-                    | #{year}
-                a(href="https://www.facebook.com/daanretard", target="_blank")
-                    .iconify(data-icon="fa-brands:facebook", style="color: #3b5998")
-                a(href="https://github.com/yangszwei/daan-retard", target="_blank")
-                    .iconify(data-icon="fa-brands:github")
-        #user_prompt.card
-            header
-                h4 登入即可使用下列功能
-            main
-                .item
-                    .iconify(data-icon="fa-regular:clock")
-                    p.title 追蹤貼文狀態
-                .item
-                    .iconify(data-icon="fa-regular:comment")
-                    p.title 匿名回覆留言
-                .item
-                    .iconify(data-icon="fa-brands:facebook-messenger")
-                    p.title 以Messenger投稿（需登入Facebook帳戶）
-            footer
-                a.button.primary(href="/user/register") 建立帳號
-                a.text(href="/post") 跳過
+                img(src="/images/icon_331.png")
+                h4 匿名發文系統
+                p.meta #{version}
+            section#menu
+                if user
+                    a(href="/post/create") 建立貼文
+                else
+                    a.button.primary(href="/user/register") 建立帳戶
+                    a.link(href="/post/create") 建立貼文
+        include footer

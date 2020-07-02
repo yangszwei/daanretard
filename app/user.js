@@ -7,10 +7,11 @@ class User {
 
     static async getUserByPassword(email, password) {
         let user = await db.collection("users").findOne({ email: email });
-        if (
-            !user ||
-            !bcrypt.compareSync(password, user.providers.password.password)
-        ) {
+        if (!user) {
+            throw "Invalid Credential";
+        } else if (!user.providers.hasOwnProperty("password")) {
+            throw "No Valid Provider";
+        } else if (!bcrypt.compareSync(password, user.providers.password.password)) {
             throw "Invalid Credential";
         }
         return user;
@@ -21,14 +22,20 @@ class User {
             fields: ["id", "name", "email"].join(","),
             access_token: accessToken
         });
+        let users = db.collection("users");
         let user = await db.collection("users").findOne({
-            providers: { facebook: { id: facebookUser.id } }
+            "providers.facebook.id": facebookUser.id
         });
         if (!user) {
-            return await this.createUserWithFacebook({
-                accessToken: accessToken,
-                ...facebookUser
-            });
+            if (await users.findOne({ email: facebookUser.email })) {
+                // TODO: prompt add facebook to providers
+                throw "User Already Exists";
+            } else {
+                return await this.createUserWithFacebook({
+                    accessToken: accessToken,
+                    ...facebookUser
+                });
+            }
         }
         return user;
     }

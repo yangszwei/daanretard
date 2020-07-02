@@ -1,0 +1,208 @@
+@import "https://fonts.googleapis.com/css2?family=Noto+Sans+TC&display=swap"
+@require "color.styl"
+
+// LAYOUT
+
+menu-height = 3.2rem
+
+html
+    height 100%
+
+body
+    height 100%
+    width 100%
+    margin 0
+
+body *
+    margin 0
+    padding 0
+    color default-text
+    font-family 'Noto Sans TC', sans-serif
+    box-sizing border-box
+
+body > *
+    width 100%
+    padding 0 2rem
+    background default
+
+@media (max-width: 480px)
+    body > *
+        padding 0 1em;
+
+body > nav
+    height menu-height
+    position fixed 0 0
+    display flex
+    justify-content flex-end
+    align-items center
+    background rgba(default, 0.95)
+    z-index 10
+    & > .title
+        margin-left 0
+        margin-right auto
+    & > .toggle-menu
+        display none
+        .close
+            display none
+    &.active > .toggle-menu
+        .open
+            display none
+        .close
+            display inline-block
+    & > .menu
+        display flex
+        align-items center
+        background rgba(default, 0.95)
+    & > .menu > .item
+        margin-left 1em
+        a
+            opacity 0.8
+        a:hover
+            opacity: 1
+
+@media (max-width: 480px)
+    body > nav
+        & > .toggle-menu
+            display inline-block
+        & > .menu
+            display block
+            position fixed menu-height 0 auto
+            z-index -1
+            opacity 0
+            padding-top 0.1em
+            box-shadow 0 1px 3px -2px rgba(0,0,0,0.12), 0 1px 2px -2px rgba(0,0,0,0.24)
+            transform translateY(-200%)
+            transition-duration 240ms
+        & > .menu > .item
+            font-size 1.2em
+            margin 0.5em 1em 1.5em
+            display flex
+            justify-content flex-end
+        &.active > .menu
+            opacity 1
+            transform translateY(0)
+
+body > main
+    display flex
+    flex-direction column
+    align-items center
+    min-height 100%
+    // min-height "calc(100% - %s)" % menu-height
+    padding-top menu-height
+    position relative
+    border 0
+    outline 0
+    box-sizing border-box
+    & > .page_title
+        margin 1em auto
+
+body > footer
+    height menu-height
+    display flex
+    align-items center
+    background dark
+    p
+        color dark-text
+
+// ELEMENT
+
+h1
+    font-size 2.7em
+
+h2
+    font-size 2.4em
+
+h3
+    font-size 2.1em
+
+h4
+    font-size 1.8em
+
+h5, .title
+    font-size 1.5em
+
+h6
+    font-size 1.2em
+
+
+img
+    width auto
+    max-height 100%
+    max-width 100%
+    object-fit contain
+    -webkit-user-drag none
+
+a
+    text-decoration none
+    cursor pointer
+
+button
+    outline 0
+    border 0
+    background transparent
+    cursor pointer
+
+input
+    border 0
+    outline 0
+    height 2.2em
+    width 100%
+    border-bottom 2px solid
+    border-color default-text
+    border-radius 0
+    display block
+    font-size 1em
+    background-color default
+    &:focus
+        border-color primary
+
+.iconify
+    font-size 2.4em
+
+.link
+    color link-text
+    text-decoration none
+    &:hover
+        text-decoration underline
+
+.dropdown-menu
+    display flex
+    flex-direction column
+    margin-top 1em
+    background-color default
+    position absolute
+
+.button
+    text-align center
+    font-size 1.2em
+    padding 0.4em 1.2em
+    opacity 0.9
+    transition-duration 120ms
+    &:hover
+        opacity 1
+
+.primary
+    color primary-text
+    background-color primary
+
+.error-text
+    color red
+
+.form
+    width 20em
+    max-width 100%
+    .form-controls
+        margin 1em 0
+    .form-controls button
+        width 100%
+        margin: 1em 0
+
+.center
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+
+.facebook
+    color facebook-text
+    background-color facebook

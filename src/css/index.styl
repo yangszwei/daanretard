@@ -1,0 +1,28 @@
+$center-flex
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+
+main
+    justify-content center
+    & > *
+        display block
+        margin auto
+    header
+        @extends $center-flex
+        height: 20em
+    #menu
+        @extends $center-flex
+        height: 10em
+
+main img
+    margin: 2em 0
+    max-height 10em
+
+main
+    .button
+        width 8em
+    .link
+        padding 0.2em
+        margin 1em

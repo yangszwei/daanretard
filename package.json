@@ -21,9 +21,7 @@
   "devDependencies": {
     "bcrypt": "^5.0.0",
     "browser-sync": "^2.26.7",
-    "gulp-postcss": "^8.0.0",
-    "gulp-print": "^5.0.2",
-    "gulp-rename": "^2.0.0",
+    "gulp-stylus": "^2.7.0",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
@@ -32,21 +30,20 @@
     "koa-static": "^5.0.0",
     "koa-views": "^6.3.0",
     "mongodb": "^3.5.9",
-    "postcss-extend": "^1.0.5",
-    "postcss-import": "^12.0.1",
     "pug": "^3.0.0",
-    "vinyl-paths": "^3.0.1"
+    "rucksack-css": "^1.0.2",
+    "terser-webpack-plugin": "^3.0.6",
+    "vinyl-named": "^1.1.0",
+    "vinyl-paths": "^3.0.1",
+    "webpack-stream": "^5.2.1"
   },
   "dependencies": {
     "@koa/router": "^9.0.1",
-    "autoprefixer": "^9.8.4",
-    "cssnano": "^4.1.10",
     "del": "^5.1.0",
     "got": "^11.3.0",
     "gulp": "^4.0.2",
-    "gulp-imagemin": "^7.1.0",
+    "gulp-clean-css": "^4.3.0",
     "gulp-sourcemaps": "^2.6.5",
-    "gulp-terser": "^1.2.0",
-    "precss": "^4.0.0"
+    "poststylus": "^1.0.0"
   }
 }

@@ -5,14 +5,14 @@ const User = require("../app/user");
 const router = new Router();
 
 router.get("/login", async (ctx) => {
-    await ctx.render("user/login", {
+    await ctx.render("user_login", {
         title: "登入",
         appId: facebook.appId
     });
 });
 
 router.get("/register", async (ctx) => {
-    await ctx.render("user/register", {
+    await ctx.render("user_register", {
         title: "建立帳號",
         appId: facebook.appId
     });
@@ -27,6 +27,8 @@ router.post("/login", async (ctx) => {
         await ctx.json({ status: "success" });
     } catch(err) {
         if (err === "Invalid Credential") {
+            await ctx.json({ status: "failed", reason: err });
+        } else if (err === "No Valid Provider") {
             await ctx.json({ status: "failed", reason: err });
         } else {
             console.error(err);
@@ -65,8 +67,12 @@ router.post("/oauth/facebook", async (ctx) => {
         ctx.cookies.set("user", token, { httpOnly: true, signed: true });
         await ctx.json({ status: "success" });
     } catch(err) {
-        console.error(err);
-        await ctx.throw(500, "Internal Server Error");
+        if (err === "User Already Exists") {
+            await ctx.json({ status: "failed", reason: err });
+        } else {
+            console.error(err);
+            await ctx.throw(500, "Internal Server Error");
+        }
     }
 });
 

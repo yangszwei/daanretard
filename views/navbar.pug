@@ -1,0 +1,19 @@
+nav
+    a.title(href="/") 靠北大安4.0
+    button.toggle-menu
+        .iconify.open(data-icon="mdi:menu")
+        .iconify.close(data-icon="mdi:close")
+    .menu
+        .item
+            a(href="/rules") 版規
+        if user
+            .item
+                a(href="/post/me") 我的貼文
+            .item
+                a(href="/post") 建立貼文
+        else
+            .item
+                a(href="/user/login") 登入
+            .item
+                a(href="/user/register") 建立帳戶
+

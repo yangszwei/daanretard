@@ -1,73 +1,69 @@
 const { task, src, dest, series, parallel, watch } = require("gulp"),
-    print = require("gulp-print").default,
     vinylPaths = require("vinyl-paths"),
-    rename = require("gulp-rename"),
     sourcemaps = require("gulp-sourcemaps"),
-    postcss = require("gulp-postcss"),
-    postcssImport = require("postcss-import"),
-    extend = require("postcss-extend"),
-    precss = require("precss"),
-    cssnano = require("cssnano"),
-    autoprefixer = require("autoprefixer"),
+    stylus = require("gulp-stylus"),
+    poststylus = require("poststylus"),
+    rucksack = require("rucksack-css"),
+    cleanCSS = require("gulp-clean-css"),
     del = require("del"),
-    terser = require("gulp-terser"),
-    sync = require("browser-sync"),
-    imagemin = require('gulp-imagemin');
+    named = require("vinyl-named"),
+    webpack = require("webpack-stream"),
+    TerserPlugin = require("terser-webpack-plugin"),
+    sync = require("browser-sync");
 
-task("stylesheets:delete", () => {
-    return src("public/stylesheets/*")
-        .pipe(print())
+task("css:delete", () => {
+    return src("public/css/*")
         .pipe(vinylPaths(del))
 });
 
-task("stylesheets:build", () => {
-    return src("src/stylesheets/**/*.pcss")
-        .pipe(print())
+task("css:build", () => {
+    return src("src/css/**/*.styl")
         .pipe(sourcemaps.init())
-        .pipe(postcss([
-            postcssImport, extend,
-            precss, autoprefixer, cssnano
-        ]))
-        .pipe(rename({ extname: ".css" }))
+        .pipe(stylus({
+            use: [ poststylus([ rucksack({ autoprefixer: true }) ]) ]
+        }))
+        .pipe(cleanCSS())
         .pipe(sourcemaps.write("."))
-        .pipe(dest("public/stylesheets"));
+        .pipe(dest("public/css"));
 });
 
-task("stylesheets", series("stylesheets:delete", "stylesheets:build"));
+task("css", series("css:delete", "css:build"));
 
-task("javascripts:delete", () => {
-    return src("public/javascripts/*")
-        .pipe(print())
+task("js:delete", () => {
+    return src("public/js/*")
         .pipe(vinylPaths(del));
 });
 
-task("javascripts:build", () => {
-    return src("src/javascripts/**/*.js")
-        .pipe(print())
+task("js:build", () => {
+    return src("src/js/**/*.js")
         .pipe(sourcemaps.init())
-        .pipe(terser())
+        .pipe(named())
+        .pipe(webpack({
+            mode: "development",
+            optimization: {
+                minimize: true,
+                minimizer: [new TerserPlugin()],
+            }
+        }))
         .pipe(sourcemaps.write("."))
-        .pipe(dest("public/javascripts"));
+        .pipe(dest("public/js"));
 });
 
-task("javascripts", series("javascripts:delete", "javascripts:build"));
+task("js", series("js:delete", "js:build"));
 
 task("images:delete", () => {
     return src("public/images/*")
-        .pipe(print())
         .pipe(vinylPaths(del));
 });
 
-task("images:build", () => {
+task("images:copy", () => {
     return src("src/images/*")
-        .pipe(print())
-        .pipe(imagemin())
         .pipe(dest('public/images'));
 });
 
-task("images", series("images:delete", "images:build"));
+task("images", series("images:delete", "images:copy"));
 
-task("build", parallel("stylesheets", "javascripts", "images"));
+task("build", parallel("css", "js", "images"));
 
 task("reload", (done) => {{
     sync.reload();
@@ -77,7 +73,7 @@ task("reload", (done) => {{
 task("watch", () => {
     let { browserSync } = require("./config").external;
     sync.init(browserSync);
-    watch("src/javascripts/**/*.js", series("javascripts", "reload"));
-    watch("src/stylesheets/**/*.pcss", series("stylesheets", "reload"));
+    watch("src/js/**/*.js", series("js", "reload"));
+    watch("src/css/**/*.styl", series("css", "reload"));
     watch("views/*.pug", series("reload"));
 });
