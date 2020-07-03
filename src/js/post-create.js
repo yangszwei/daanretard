@@ -21,7 +21,7 @@ function readAsDataURL(file) {
 function initMediaPreview() {
     const media = document.getElementById("media"),
         preview = document.getElementsByClassName("images-preview")[0];
-    media.addEventListener("input", async (event) => {
+    media.addEventListener("change", async (event) => {
         while (preview.firstChild) preview.removeChild(preview.firstChild);
         for (let file of media.files || []) {
             let image = document.createElement("img");
@@ -34,7 +34,7 @@ function initMediaPreview() {
 function initMediaSizePreview() {
     const media = document.getElementById("media"),
         label = document.querySelector(`label[for=media]`);
-    media.addEventListener("input", async (event) => {
+    media.addEventListener("change", async (event) => {
         let size = getInputSize(media) / (1024 ** 2);
         label.innerText = `上傳圖片 (${size.toPrecision(2)} / 10MB)`;
     });

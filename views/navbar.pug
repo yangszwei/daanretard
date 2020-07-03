@@ -1,16 +1,16 @@
-nav
-    a.title(href="/") 靠北大安4.0
+nav#navbar
     button.toggle-menu
         .iconify.open(data-icon="mdi:menu")
         .iconify.close(data-icon="mdi:close")
+    a.title(href="/") 靠北大安4.0
+    a(href="/post/create").create-post
+        .iconify(data-icon="mdi:plus")
     .menu
         .item
             a(href="/rules") 版規
         if user
             .item
-                a(href="/post/me") 我的貼文
-            .item
-                a(href="/user/me") 我的帳戶
+                a(href="/user") 我的帳戶
         else
             .item
                 a(href="/user/login") 登入

@@ -3,6 +3,7 @@ const Router = require("@koa/router"),
     jwt = require("jsonwebtoken");
 const User = require("../app/user");
 const router = new Router();
+const SECONDS_IN_A_MONTH = 60 * 60 * 24 * 30;
 
 router.get("/", async (ctx) => {
     ctx.redirect(ctx.user ? "/user/me" : "/user/register");
@@ -24,14 +25,23 @@ router.get("/register", async (ctx) => {
        ctx.redirect("/user/me");
     } else {
         await ctx.render("user-register", {
-            title: "建立帳號",
+            title: "建立帳戶",
             appId: facebook.appId
         });
     }
 });
 
 router.get("/me", async (ctx) => {
-    ctx.body = "me";
+    if (ctx.user) {
+        // TODO: handle error when fetching user profile fail
+        await ctx.render("user-me", {
+            title: "我的帳戶",
+            user: await User.getUserByObjectId(ctx.user.id)
+        });
+    } else {
+        await ctx.redirect("/user/register");
+    }
+
 })
 
 router.post("/login", async (ctx) => {
@@ -39,7 +49,11 @@ router.post("/login", async (ctx) => {
         let { email, password } = ctx.request.body;
         let user = await User.getUserByPassword(email, password);
         let token = jwt.sign({ id: user._id }, security.jwt);
-        ctx.cookies.set("user", token, { httpOnly: true, signed: true });
+        ctx.cookies.set("user", token, {
+            httpOnly: true,
+            signed: true,
+            maxAge: SECONDS_IN_A_MONTH * 2
+        });
         await ctx.json({ status: "success" });
     } catch(err) {
         if (err === "Invalid Credential") {

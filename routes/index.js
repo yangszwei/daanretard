@@ -13,7 +13,9 @@ router.get("/", async (ctx) => {
 router.get("/rules", async (ctx) => {
     // TODO: load & cache rules on app start to ease database pressure
     await ctx.render("rules", {
-        rules: (await App.rules).content
+        title: "版規",
+        rules: (await App.rules).content,
+        user: ctx.user
     });
 });
 

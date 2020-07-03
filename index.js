@@ -8,7 +8,8 @@ const Koa = require("koa"),
     helmet = require("koa-helmet"),
     database = require("./app/database"),
     user = require("./app/user-auth"),
-    json = require("./app/json");
+    json = require("./app/json"),
+    error = require("./app/error");
 const app = new Koa(),
     router = require("./routes/index");
 
@@ -20,6 +21,7 @@ async function initApp() {
     app.use(json());
     await database.connect();
     app.use(user());
+    app.use(error());
     app.use(router.routes());
     app.use(router.allowedMethods());
     app.proxy = server.proxy;

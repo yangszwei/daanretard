@@ -1,0 +1,46 @@
+doctype html
+html
+    head
+        include head
+        script(src="/js/user-me.js")
+    body
+        include navbar
+        main
+            .subnav
+                button.active(data-target="profile") 我的帳戶
+                button(data-target="post") 我的貼文
+                button(data-target="preference") 偏好設定
+            .content
+                section#profile.active
+                    h6.section_title 基本資料
+                    .form
+                        .form-controls
+                            label(for="username") 姓名
+                            input#username(type="text", value=`${user.name || ""}`)
+                        .form-controls
+                            label(for="email") 電子郵件
+                            input#email(type="text", value=`${user.email || ""}`)
+                        .form-controls.center
+                            button.button.primary 更新資料
+                            button.button.secondary 登出
+                    h6.section_title 變更密碼
+                    .form
+                        .form-controls
+                            label(for="password") 密碼
+                            input#password(type="password")
+                        .form-controls
+                            label(for="new-password") 新密碼
+                            input#new-password(type="password")
+                        .form-controls.center
+                            button.button.primary 變更密碼
+                    h6.section_title Facebook帳號
+                    .form
+                        .form-controls.center
+                            if user.providers.facebook
+                                button.button.secondary(disabled) 解除連結
+                            else
+                                button.button.primary 連結Facebook帳號
+                section#post
+
+                section#preference
+        include footer

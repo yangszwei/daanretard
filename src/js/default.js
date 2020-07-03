@@ -1,10 +1,21 @@
-function toggleMenu() {
-    document.querySelector("body > nav .toggle-menu")
-        .addEventListener("click", () => {
-            document.querySelector("body > nav").classList.toggle("active");
-        });
-}
+window.addEventListener("load", () => {
 
-addEventListener("load", event => {
-    toggleMenu();
+    const navbar = document.getElementById("navbar");
+
+    (function initMenuToggle() {
+        let toggle = document.querySelector("#navbar > .toggle-menu");
+        toggle.onclick = (event) => {
+            event.stopPropagation();
+            navbar.classList.toggle("active");
+        };
+    })();
+
+    (function closeMenuOnClickOutside() {
+        document.body.addEventListener("click", (event) => {
+          if (!(this === navbar) || !navbar.contains(this)) {
+              navbar.classList.remove("active");
+          }
+        });
+    })();
+
 });

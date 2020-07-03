@@ -12,6 +12,7 @@ function getDatabaseUri() {
 
 module.exports = {
     client: client,
+    _id: mongodb.ObjectID,
     connect: async () => {
         return await client.connect();
     },

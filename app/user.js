@@ -17,6 +17,10 @@ class User {
         return user;
     }
 
+    static async getUserByObjectId(_id) {
+        return db.collection("users").findOne({ _id: db._id(_id) });
+    }
+
     static async continueWithFacebook(accessToken) {
         let facebookUser = await graph("GET /me", {
             fields: ["id", "name", "email"].join(","),

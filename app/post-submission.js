@@ -1,20 +1,16 @@
 const BSON = require('bson');
 const db = require("./database");
-const bson = new BSON();
+const sendmail = require("./sendmail");
 
 class PostSubmission {
 
-    static create(post) {
-        return db.collection("submissions").insertOne({
+    static async create(post) {
+        await db.collection("submissions").insertOne({
             author: post.author || "email",
             content: post.content,
-            media: post.media.map((file) => bson.serialize(file)),
+            media: post.media.map((file) => BSON.serialize(file)),
             ...(post.email ? { email: post.email } : {})
         });
-    }
-
-    verify() {
-
     }
 
 }

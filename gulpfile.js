@@ -39,10 +39,12 @@ task("js:build", () => {
         .pipe(sourcemaps.init())
         .pipe(named())
         .pipe(webpack({
-            mode: "development",
+            mode: "production",
             optimization: {
                 minimize: true,
-                minimizer: [new TerserPlugin()],
+                minimizer: [new TerserPlugin({
+                    sourceMap: false
+                })]
             }
         }))
         .pipe(sourcemaps.write("."))
