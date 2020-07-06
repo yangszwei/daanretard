@@ -4,7 +4,6 @@ html
         include head
         link(rel="stylesheet", href="/css/index.css")
     body
-        include navbar
         main
             header
                 img(src="/images/icon_331.png")
@@ -12,8 +11,8 @@ html
                 p.meta #{version}
             section#menu
                 if user
-                    a.button.primary(href="/post/create") 建立貼文
+                    a.button-default.primary(href="/post/create") 建立貼文
                 else
-                    a.button.primary(href="/user/register") 建立帳戶
-                    a.link(href="/post/create") 建立貼文
-        include footer
+                    a.button-default.primary(href="/user/register") 建立帳戶
+                    a.link-default(href="/post/create") 建立貼文
+        include page-basic

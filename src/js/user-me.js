@@ -1,3 +1,5 @@
+import { Accordion } from "./component";
+
 function initTabButton() {
     let buttons = document.querySelectorAll(".subnav > [data-target]");
     for (let button of buttons) {
@@ -12,6 +14,12 @@ function initTabButton() {
     }
 }
 
+function initAccordions() {
+    let accordions = document.getElementsByClassName("accordion");
+    Accordion.Group(accordions);
+}
+
 onload = () => {
     initTabButton();
+    initAccordions();
 };

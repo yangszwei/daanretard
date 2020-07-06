@@ -12,6 +12,7 @@ module.exports = () => {
                 });
             } else {
                 // TODO: 500 error page
+                console.error(err)
                 await ctx.redirect("/");
             }
         }

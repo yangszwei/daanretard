@@ -1,18 +1,24 @@
 const { security } = require("../config");
 const jwt = require("jsonwebtoken");
-const SECONDS_IN_A_MONTH = 60 * 60 * 24 * 30;
+const MILLISECONDS_IN_A_DAY = 60 * 60 * 24 * 1000;
 
 module.exports = () => {
     return async (ctx, next) => {
         if (ctx.cookies.get("user")) {
             let user = ctx.cookies.get("user");
             ctx.user = jwt.verify(user, security.jwt);
-            let token = jwt.sign({ id: user._id }, security.jwt);
-            ctx.cookies.set("user", token, {
-                httpOnly: true,
-                signed: true,
-                maxAge: SECONDS_IN_A_MONTH * 2
-            });
+            if (!ctx.cookies.get("updated")) {
+                let token = jwt.sign(ctx.user, security.jwt);
+                ctx.cookies.set("user", token, {
+                    httpOnly: true,
+                    signed: true,
+                    maxAge: MILLISECONDS_IN_A_DAY * 30 * 2
+                });
+                ctx.cookies.set("updated", true, {
+                    httpOnly: true,
+                    maxAge: MILLISECONDS_IN_A_DAY
+                });
+            }
         }
         await next();
     };

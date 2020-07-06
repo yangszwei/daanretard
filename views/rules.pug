@@ -4,11 +4,10 @@ html
         include head
         link(rel="stylesheet", href="/css/rules.css")
     body
-        include navbar
         main
-            h4.page_title 版規
+            h4.page-title 版規
             each rule in rules
                 .item
                     h5 #{rule.title}
                     p #{rule.content}
-        include footer
+        include page-basic

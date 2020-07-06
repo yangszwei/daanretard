@@ -1,6 +1,6 @@
 const { app } = require("../config");
 const Router = require("@koa/router");
-const App = require("../app/app");
+const config = require("../app/config");
 const router = new Router();
 
 router.get("/", async (ctx) => {
@@ -14,7 +14,7 @@ router.get("/rules", async (ctx) => {
     // TODO: load & cache rules on app start to ease database pressure
     await ctx.render("rules", {
         title: "版規",
-        rules: (await App.rules).content,
+        rules: (await config.rules).data,
         user: ctx.user
     });
 });

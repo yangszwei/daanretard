@@ -4,43 +4,77 @@ html
         include head
         script(src="/js/user-me.js")
     body
-        include navbar
         main
-            .subnav
-                button.active(data-target="profile") 我的帳戶
-                button(data-target="post") 我的貼文
-                button(data-target="preference") 偏好設定
-            .content
-                section#profile.active
-                    h6.section_title 基本資料
-                    .form
-                        .form-controls
+            .accordion.centered
+                .toggle.form-default.active
+                    h6.section-title 基本資料
+                    span
+                        .iconify.open(data-icon="mdi:chevron-down")
+                        .iconify.close(data-icon="mdi:chevron-up")
+                .content.centered.active
+                    .form-basic.form-default
+                        .form-control
                             label(for="username") 姓名
                             input#username(type="text", value=`${user.name || ""}`)
-                        .form-controls
+                        .form-control
                             label(for="email") 電子郵件
                             input#email(type="text", value=`${user.email || ""}`)
-                        .form-controls.center
-                            button.button.primary 更新資料
-                            button.button.secondary 登出
-                    h6.section_title 變更密碼
-                    .form
-                        .form-controls
+                        .form-control.centered
+                            button.button-default.primary 更新資料
+            .accordion.centered
+                .toggle.form-default
+                    h6.section-title 登入方式
+                    span
+                        .iconify.open(data-icon="mdi:chevron-down")
+                        .iconify.close(data-icon="mdi:chevron-up")
+                .content.centered
+                    .form-basic.form-default
+                        .form-control
                             label(for="password") 密碼
                             input#password(type="password")
-                        .form-controls
+                        .form-control
                             label(for="new-password") 新密碼
                             input#new-password(type="password")
-                        .form-controls.center
-                            button.button.primary 變更密碼
-                    h6.section_title Facebook帳號
-                    .form
-                        .form-controls.center
-                            if user.providers.facebook
-                                button.button.secondary(disabled) 解除連結
-                            else
-                                button.button.primary 連結Facebook帳號
-                section#post
-
-                section#preference
-        include footer
+                        .form-control.centered
+                            button.button-default.primary 變更密碼
+            .accordion.centered
+                .toggle.form-default
+                    h6.section-title Facebook帳號
+                    span
+                        .iconify.open(data-icon="mdi:chevron-down")
+                        .iconify.close(data-icon="mdi:chevron-up")
+                .content.centered
+                    .form-basic.form-default
+                        if user.apps.facebook
+                            .form-control
+                                 label(for="fb-username") 帳號名稱
+                                 input#fb-username(
+                                     type="text",
+                                     value=`${user.apps.facebook.name}`
+                                     disabled
+                                 )
+                            .form-control
+                                label(for="fb-email") 電子郵件
+                                input#fb-email(
+                                    type="text",
+                                    value=`${user.apps.facebook.email}`,
+                                    disabled
+                                )
+                            .form-control.centered
+                                button.button-default.secondary(disabled) 解除連結
+                        else
+                            .form-control.centered
+                                button.button-default.primary 連結Facebook帳號
+            .accordion.centered
+                .toggle.form-default
+                    h6.section-title 我的帳戶
+                    span
+                        .iconify.open(data-icon="mdi:chevron-down")
+                        .iconify.close(data-icon="mdi:chevron-up")
+                .content.centered
+                    .form-basic.form-default
+                        .form-control.centered
+                            if !user.verified
+                                a.button-default.secondary(href="/user/verify") 驗證電子郵件
+                            a.button-default.secondary(href="/user/logout") 登出
+        include page-basic

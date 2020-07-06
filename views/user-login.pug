@@ -5,21 +5,20 @@ html
         include facebook-sdk
         script(src="/js/user-login.js")
     body
-        include navbar
-        main
-            h4.page_title 登入
-            #login.form
-                .form-controls
+        main.centered
+            h4.page-title 登入
+            #login.form-basic.form-default
+                .form-control
                     label(for="email") 電子郵件
                     input#email(name="email", type="email")
-                .form-controls
+                .form-control
                     label(for="password") 密碼
                     input#password(name="password", type="password")
-                .form-controls.center
-                    button#submit.button.primary 登入
-                    a.link(href="/user/recover") 重設密碼
-                .form-controls.center
+                .form-control.centered
+                    button#submit.button-default.primary 登入
+                    a.link-default(href="/user/recover") 重設密碼
+                .form-control.centered
                     p.form-message
-                .form-controls.center
-                    button#facebook.button.facebook 以Facebook登入
-        include footer
+                .form-control.centered
+                    button#facebook.button-default.facebook 以Facebook登入
+        include page-basic

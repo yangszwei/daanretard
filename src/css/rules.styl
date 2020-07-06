@@ -1,19 +1,19 @@
-$center-flex
+$centered-text
+    width 28rem
+    max-width 100%
+    text-align center
+
+main .item
     display flex
     flex-direction column
     align-items center
-
-main
-    @extends $center-flex
-    .item
-        @extends $center-flex
-        h5
-            margin 0.5em auto
-        p
-            max-width 30em
-            margin 1em auto
-            text-align center
+    h5
+        @extends $centered-text
+        margin 0.5rem auto
+    p
+        @extends $centered-text
+        margin 1rem auto
 
 @media (max-width: 480px)
     main
-        padding-bottom 1em
+        padding-bottom 1rem

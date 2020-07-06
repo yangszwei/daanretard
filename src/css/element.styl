@@ -1,0 +1,104 @@
+$text
+    color default-text
+    font-family "Noto Sans TC", sans-serif
+
+$title
+    margin 1rem 0
+
+h1
+    @extends $text
+    @extends $title
+    font-size 2.7rem
+
+h2
+    @extends $text
+    @extends $title
+    font-size 2.4rem
+
+h3
+    @extends $text
+    @extends $title
+    font-size 2.1rem
+
+h4
+    @extends $text
+    @extends $title
+    font-size 1.8rem
+
+h5
+    @extends $text
+    @extends $title
+    font-size 1.5rem
+
+h6
+    @extends $text
+    @extends $title
+    font-size 1.2rem
+
+p
+    @extends $text
+    font-size 1rem
+
+a
+    @extends $text
+    font-size 1rem
+    text-decoration none
+    cursor pointer
+
+button
+    @extends $text
+    padding 0
+    border 0
+    outline 0
+    font-size 1rem
+    cursor pointer
+    color default-text
+    background-color transparent
+
+label
+    @extends $text
+    display block
+
+input
+    @extends $text
+    border 0
+    outline 0
+    height 2.2em
+    width 100%
+    border-bottom 2px solid
+    border-color default-text
+    border-radius 0
+    display block
+    font-size 1em
+    background-color default
+    box-sizing border-box
+    &:focus
+        border-color primary
+
+input[type="file"]
+    position absolute
+    width 1px
+    height 1px
+    padding 0
+    margin -1px
+    overflow hidden
+    clip rect(0,0,0,0)
+    border 0
+
+textarea
+    @extends $text
+    outline 0
+    min-height 12em
+    width 100%
+    border 2px solid
+    border-color default-text
+    border-radius 0
+    display block
+    font-size 1rem
+    background-color default
+    margin 0.4rem 0
+    padding 0.4rem
+    resize vertical
+    box-sizing border-box
+    &:focus
+        border-color primary

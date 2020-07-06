@@ -4,24 +4,27 @@ html
         include head
         script(src="/js/post-create.js")
     body
-        include navbar
-        main
-            h4.page_title 建立貼文
-            .form
+        main.centered
+            h4.page-title 建立貼文
+            .form-basic.form-large
                 unless user
-                    .form-controls
+                    .form-control
                         label(for="email") 電子郵件
                         input#email(name="email", type="email")
-                .form-controls
+                .form-control
                     label(for="content") 貼文內容
                     textarea#content
-                .form-controls
+                .form-control
                     label(for="media") 上傳圖片 (0 / 10MB)
-                    .images-preview
-                    label.button.secondary 選擇圖片
-                        input#media(type="file", multiple, accept="image/*")
-                .form-controls.center
-                    button#submit.button.primary 送出貼文
-                .form-controls.center
+                    .images-preview.centered
+                        .container
+                        .empty
+                            p 上傳圖片後將可於此處預覽
+                    .container.centered
+                        label.button-default.secondary 上傳圖片
+                            input#media(type="file", multiple, accept="image/*")
+                .form-control.centered
+                    button#submit.button-default.primary 送出貼文
+                .form-control.centered
                     p.form-message
-        include footer
+        include page-basic

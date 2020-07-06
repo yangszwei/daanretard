@@ -1,5 +1,6 @@
 import { setFormMessage, POST, getQueryVariable } from "./form";
 import { initFacebookButton } from "./user-auth";
+const RESULT = require("../../app/result-code");
 
 function initLoginButton() {
     const submit = document.getElementById("submit"),
@@ -15,14 +16,14 @@ function initLoginButton() {
             password: password.value
         });
         let result = await response.json();
-        if (result.status === "success") {
+        if (result.code === RESULT.SUCCESS) {
             location.href = getQueryVariable("redirect_url") || "/";
-        } else if (result.reason === "Invalid Credential") {
+        } else if (result.code === RESULT.INVALID_INPUT) {
             setFormMessage("電子郵件或密碼錯誤");
-        } else if (result.reason === "No Valid Provider") {
-            setFormMessage("此帳戶無法使用密碼登入");
+        } else if (result.code === RESULT.INVALID_TARGET) {
+            setFormMessage("此帳戶未啟用以密碼登入");
         } else {
-            setFormMessage("伺服器發生錯誤");
+            setFormMessage(`伺服器發生錯誤（錯誤代碼：${result.code}）`);
         }
     });
 }

@@ -20,7 +20,7 @@ function readAsDataURL(file) {
 
 function initMediaPreview() {
     const media = document.getElementById("media"),
-        preview = document.getElementsByClassName("images-preview")[0];
+        preview = document.querySelector(".images-preview .container");
     media.addEventListener("change", async (event) => {
         while (preview.firstChild) preview.removeChild(preview.firstChild);
         for (let file of media.files || []) {

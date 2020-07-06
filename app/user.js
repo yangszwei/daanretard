@@ -1,121 +1,174 @@
+const { security } = require("../config");
 const Joi = require("joi"),
-    bcrypt = require("bcrypt");
+    bcrypt = require("bcrypt"),
+    jwt = require("jsonwebtoken");
 const db = require("./database"),
-    graph = require("./graph");
+    graph = require("./graph"),
+    RESULT = require("./result-code"),
+    sendmail = require("./sendmail");
+
+const USER_DEFAULT_PREFERENCES = {};
 
 class User {
 
-    static async getUserByPassword(email, password) {
-        let user = await db.collection("users").findOne({ email: email });
-        if (!user) {
-            throw "Invalid Credential";
-        } else if (!user.providers.hasOwnProperty("password")) {
-            throw "No Valid Provider";
-        } else if (!bcrypt.compareSync(password, user.providers.password.password)) {
-            throw "Invalid Credential";
-        }
-        return user;
-    }
+    // LOG IN
 
-    static async getUserByObjectId(_id) {
-        return db.collection("users").findOne({ _id: db._id(_id) });
+    static async loginWithPassword(email, password) {
+        let user = await this.#getUserByEmail(email);
+        if (!user) throw RESULT.NOT_FOUND;
+        if (!user.keys.hasOwnProperty("password")) throw RESULT.INVALID_TARGET;
+        if (!user.keys.password.enabled) throw RESULT.DISABLED;
+        let hash = user.keys.password.data;
+        if (!bcrypt.compareSync(password, hash)) throw RESULT.INVALID_INPUT;
+        return user;
     }
 
     static async continueWithFacebook(accessToken) {
-        let facebookUser = await graph("GET /me", {
-            fields: ["id", "name", "email"].join(","),
-            access_token: accessToken
-        });
-        let users = db.collection("users");
-        let user = await db.collection("users").findOne({
-            "providers.facebook.id": facebookUser.id
-        });
+        let credential = await this.#getFacebookProfile(accessToken);
+        if (!credential.hasOwnProperty("id")) throw RESULT.INVALID_INPUT;
+        let user = await this.#getUserByFacebookId(credential.id);
         if (!user) {
-            if (await users.findOne({ email: facebookUser.email })) {
-                // TODO: prompt add facebook to providers
-                throw "User Already Exists";
-            } else {
-                return await this.createUserWithFacebook({
-                    accessToken: accessToken,
-                    ...facebookUser
-                });
-            }
+            credential.accessToken = accessToken;
+            user = await this.#getUserByEmail(credential.email);
+            if (!user) return this.registerWithFacebook(credential);
+            // TODO: prompt to connect facebook.
+            throw RESULT.INVALID_TARGET;
         }
+        if (!user.keys.facebook.enabled) throw RESULT.DISABLED;
         return user;
     }
 
-    static async createUserWithPassword(credential) {
-        let validation = this.#validateRegistry(credential);
+    // REGISTER
+
+    static async registerWithPassword(credential) {
+        let validation = this.#validateRegistration(credential);
         if (validation.error) throw validation.error;
-        if (await this.#userExistsWithEmail(credential.email)) {
-            throw "User Already Exists";
-        }
-        return await db.collection("users").insertOne({
+        let user = await User.#getUserByEmail(credential.email);
+        if (user) throw RESULT.ALREADY_EXIST;
+        let result = await db.collection("users").insertOne({
             name: credential.name,
             email: credential.email,
-            providers: {
+            verified: false,
+            keys: {
                 password: {
-                    password: bcrypt.hashSync(credential.password, 7)
+                    enabled: true,
+                    data: bcrypt.hashSync(credential.password, 7)
                 }
-            }
+            },
+            apps: {},
+            preferences: USER_DEFAULT_PREFERENCES
         });
+        return result.ops[0];
     }
 
-    static async createUserWithFacebook(credential) {
-        return await db.collection("users").insertOne({
+    static async registerWithFacebook(credential) {
+        if (
+            !credential.hasOwnProperty("name") ||
+            !credential.hasOwnProperty("email")
+        ) throw RESULT.INVALID_INPUT;
+        let { access_token } = await graph.exchangeAccessToken(credential.accessToken);
+        let result = await db.collection("users").insertOne({
             name: credential.name,
             email: credential.email,
-            providers: {
+            verified: true,
+            keys: {
                 facebook: {
-                    id: credential.id,
-                    accessToken: credential.accessToken
+                    enabled: true,
+                    data: credential.id
                 }
-            }
-        });
-    }
-
-    // TODO: add this to router
-    static async addPasswordToProviders(_id, credential) {
-        let schema = Joi.string().regex(/^[a-zA-Z0-9]{6,30}$/).required();
-        Joi.validate(password, schema);
-        return await db.collection("users").updateOne({ _id: _id }, {
-            providers: {
-                password: {
-                    password: bcrypt.hashSync(credential.password, 7)
-                }
-            }
-        });
-    }
-
-    // TODO: add this to router
-    static async addFacebookToProviders(_id, credential) {
-        let token = await graph.exchangeAccessToken(credential.access_token);
-        return await db.collection("users").updateOne({ _id: _id }, {
-            providers: {
+            },
+            apps: {
                 facebook: {
-                    id: credential.id,
+                    enabled: true,
                     name: credential.name,
-                    accessToken: token
+                    email: credential.email,
+                    accessToken: access_token
                 }
-            }
+            },
+            preferences: USER_DEFAULT_PREFERENCES
+        });
+        return result.ops[0];
+    }
+
+    // UPDATE PROFILE
+
+    static async updateUserProfile(credential) {
+        let validation = this.#validateRegistration(credential);
+        if (validation.error) throw validation.error;
+        let user = await User.#getUserByEmail(credential.email);
+        if (!user) throw RESULT.NOT_FOUND;
+        let update = {};
+        if (credential.name) update.name = credential.name;
+        if (credential.email) {
+            update.email = credential.email;
+            update.verified = (user.apps.facebook) &&
+                (user.apps.facebook.email === update.email);
+        }
+        let result = await db.collection("users").updateOne({
+
+        }, {
+            name: credential.name,
+            email: credential.email
+        });
+        return result.ops[0];
+    }
+
+    // VERIFY
+
+    static async verifyUserByEmail(_id) {}
+
+    // GET LOCAL PROFILE
+
+    static #getUserByEmail = (email) => {
+        return this.#getUserByFilter({ email: email });
+    }
+
+    static #getUserByFacebookId = (id) => {
+        return this.#getUserByFilter({
+            "keys.facebook.data": id
         });
     }
 
-    static async sendVerificationEmail(_id) {
-        // TODO: add threshold
+    static getUserByObjectID (_id) {
+        return this.#getUserByFilter({ _id: db._id(_id) });
     }
 
-    static #validateRegistry = (credential) => {
+    static #getUserByFilter = async (filter) => {
+        let user = db.collection("users").findOne(filter);
+        if (!user) throw RESULT.NOT_FOUND;
+        return user;
+    }
+
+    // GET APP USER PROFILE
+
+    static #getFacebookProfile = (accessToken) => {
+        return graph("GET /me", {
+            fields: ["id", "name", "email"].join(","),
+            access_token: accessToken
+        })
+    }
+
+    // TOKEN
+
+    static signUserToken(user) {
+        return jwt.sign({
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            verified: user.verified,
+            privileges: user.privileges
+        }, security.jwt);
+    }
+
+    // INPUT VALIDATION
+
+    static #validateRegistration = (credential) => {
         const schema = {
             name: Joi.string().max(50).required(),
             password: Joi.string().regex(/^[a-z\d\-_\s]{6,30}$/i).required(),
             email: Joi.string().email().required()
         };
         return Joi.validate(credential, schema);
-    }
-
-    static #userExistsWithEmail = (email) => {
-        return db.collection("users").findOne({ email: email });
     }
 
 }

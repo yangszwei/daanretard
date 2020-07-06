@@ -1,16 +1,17 @@
 const { facebook } = require("../config").external;
 const got = require("got");
+const path = require("path");
 const graphUrl = "https://graph.facebook.com/v7.0";
 
 async function graph (command, query) {
-    let [ method, path ] = command.split(" ");
+    let [ method, target ] = command.split(" ");
     method = method.toLowerCase();
     query = Object.keys(query).map((key) => {
         let value = encodeURIComponent(query[key]);
         key = encodeURIComponent(key);
         return `${key}=${value}`;
     }).join('&');
-    return JSON.parse((await got[method](`${graphUrl}/${path}?${query}`)).body);
+    return JSON.parse((await got[method](`${path.join(graphUrl, target)}?${query}`)).body);
 }
 
 graph.exchangeAccessToken = (accessToken) => {

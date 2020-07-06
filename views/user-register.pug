@@ -5,24 +5,23 @@ html
         include facebook-sdk
         script(src="/js/user-register.js")
     body
-        include navbar
-        main
-            h4.page_title 建立帳戶
-            #register.form
-                .form-controls
+        main.centered
+            h4.page-title 建立帳戶
+            #register.form-basic.form-default
+                .form-control
                     label(for="username") 姓名
                     input#username(name="username", type="text")
-                .form-controls
+                .form-control
                     label(for="email") 電子郵件
                     input#email(name="email", type="email")
-                .form-controls
+                .form-control
                     label(for="password") 密碼
                     input#password(name="password", type="password")
-                .form-controls.center
-                    button#submit.button.primary 建立帳戶
-                    a.link(href="/user/login") 登入
-                .form-controls.center
+                .form-control.centered
+                    button#submit.button-default.primary 建立帳戶
+                    a.link-default(href="/user/login") 登入
+                .form-control.centered
                     p.form-message
-                .form-controls.center
-                    button#facebook.button.facebook 以Facebook登入
-        include footer
+                .form-control.centered
+                    button#facebook.button-default.facebook 以Facebook登入
+        include page-basic
