@@ -2,173 +2,206 @@ const { security } = require("../config");
 const Joi = require("joi"),
     bcrypt = require("bcrypt"),
     jwt = require("jsonwebtoken");
-const db = require("./database"),
-    graph = require("./graph"),
-    RESULT = require("./result-code"),
-    sendmail = require("./sendmail");
+const database = require("./utils/database"),
+    config = require("./config"),
+    facebook = require("./utils/facebook"),
+    { RESULT } = require("./utils/codes"),
+    mail = require("./utils/mail");
+const users = database.collection("users");
 
-const USER_DEFAULT_PREFERENCES = {};
+function generateToken() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function validateCredentials(credentials) {
+    const schema = {
+        name: Joi.string().max(50).required(),
+        password: Joi.string().regex(/^[a-z\d\-_\s]{6,30}$/i).required(),
+        email: Joi.string().email().required()
+    };
+    return Joi.validate(credentials, schema);
+}
+
+function validateCredentialsUpdate(credentials) {
+    const schema = {
+        name: Joi.string().max(50),
+        email: Joi.string().email()
+    };
+    return Joi.validate(credentials, schema);
+}
 
 class User {
 
-    // LOG IN
+    // Sign In
 
-    static async loginWithPassword(email, password) {
-        let user = await this.#getUserByEmail(email);
-        if (!user) throw RESULT.NOT_FOUND;
-        if (!user.keys.hasOwnProperty("password")) throw RESULT.INVALID_TARGET;
-        if (!user.keys.password.enabled) throw RESULT.DISABLED;
-        let hash = user.keys.password.data;
-        if (!bcrypt.compareSync(password, hash)) throw RESULT.INVALID_INPUT;
-        return user;
-    }
-
-    static async continueWithFacebook(accessToken) {
-        let credential = await this.#getFacebookProfile(accessToken);
-        if (!credential.hasOwnProperty("id")) throw RESULT.INVALID_INPUT;
-        let user = await this.#getUserByFacebookId(credential.id);
-        if (!user) {
-            credential.accessToken = accessToken;
-            user = await this.#getUserByEmail(credential.email);
-            if (!user) return this.registerWithFacebook(credential);
-            // TODO: prompt to connect facebook.
-            throw RESULT.INVALID_TARGET;
+    static async signIn(email, password) {
+        let user = await this.getUserByEmail(email);
+        if (!user.password) throw RESULT.INACCESSIBLE;
+        if (!bcrypt.compareSync(password, user.password)) {
+            throw RESULT.INVALID_QUERY;
         }
-        if (!user.keys.facebook.enabled) throw RESULT.DISABLED;
-        return user;
+        return this.signUserToken(user);
     }
 
-    // REGISTER
+    static async signInWithFacebook(accessToken) {
+        let profile = await this.getFbProfile(accessToken);
+        if (!profile) throw RESULT.INVALID_QUERY;
+        let user = await this.getUserByFacebookId(profile.id);
+        if (user) return user;
+        profile.accessToken = accessToken;
+        user = await this.getUserByEmail(profile.email);
+        if (!user) throw RESULT.FORWARD;
+        return this.registerWithFacebook(profile);
+    }
 
-    static async registerWithPassword(credential) {
-        let validation = this.#validateRegistration(credential);
+    // Register
+
+    static async register(credentials) {
+        let validation = validateCredentials(credentials);
         if (validation.error) throw validation.error;
-        let user = await User.#getUserByEmail(credential.email);
-        if (user) throw RESULT.ALREADY_EXIST;
-        let result = await db.collection("users").insertOne({
-            name: credential.name,
-            email: credential.email,
-            verified: false,
-            keys: {
-                password: {
-                    enabled: true,
-                    data: bcrypt.hashSync(credential.password, 7)
-                }
-            },
-            apps: {},
-            preferences: USER_DEFAULT_PREFERENCES
-        });
-        return result.ops[0];
+        try {
+            await User.getUserByEmail(credentials.email);
+            throw RESULT.ALREADY_EXIST;
+        } catch (err) {
+            if (err === RESULT.NOT_EXIST) {
+                let result = await users.insertOne({
+                    name: credentials.name,
+                    email: credentials.email,
+                    verified: false,
+                    password: bcrypt.hashSync(credentials.password, 7)
+                });
+                return this.signUserToken(result.ops[0]);
+            } else if (typeof err === "number") {
+                throw err;
+            }
+        }
     }
 
-    static async registerWithFacebook(credential) {
+    static async registerWithFacebook(credentials) {
         if (
-            !credential.hasOwnProperty("name") ||
-            !credential.hasOwnProperty("email")
+            !credentials.hasOwnProperty("name") ||
+            !credentials.hasOwnProperty("email")
         ) throw RESULT.INVALID_INPUT;
-        let { access_token } = await graph.exchangeAccessToken(credential.accessToken);
-        let result = await db.collection("users").insertOne({
-            name: credential.name,
-            email: credential.email,
+        let exchange = await facebook.exchangeLongLivedToken(credentials.accessToken);
+        let result = await users.insertOne({
+            name: credentials.name,
+            email: credentials.email,
             verified: true,
-            keys: {
-                facebook: {
-                    enabled: true,
-                    data: credential.id
-                }
-            },
-            apps: {
-                facebook: {
-                    enabled: true,
-                    name: credential.name,
-                    email: credential.email,
-                    accessToken: access_token
-                }
-            },
-            preferences: USER_DEFAULT_PREFERENCES
+            fb_token: exchange.access_token
         });
         return result.ops[0];
     }
 
-    // UPDATE PROFILE
+    // Update User Profile
 
-    static async updateUserProfile(credential) {
-        let validation = this.#validateRegistration(credential);
-        if (validation.error) throw validation.error;
-        let user = await User.#getUserByEmail(credential.email);
-        if (!user) throw RESULT.NOT_FOUND;
-        let update = {};
-        if (credential.name) update.name = credential.name;
-        if (credential.email) {
-            update.email = credential.email;
-            update.verified = (user.apps.facebook) &&
-                (user.apps.facebook.email === update.email);
+    static async updateUserProfile(_id, credentials) {
+        let validation = validateCredentialsUpdate(credentials);
+        if (validation.error) throw  validation.error;
+        let update = {},
+            user = await User.getUserByObjectID(_id);
+        if ((user.email !== credentials.email) && credentials.email) {
+            if (await this.getUserByEmail(credentials.email)) {
+                throw RESULT.ALREADY_EXIST;
+            }
         }
-        let result = await db.collection("users").updateOne({
-
-        }, {
-            name: credential.name,
-            email: credential.email
-        });
-        return result.ops[0];
+        if (credentials.name) update.name = credentials.name;
+        if (credentials.email) {
+            update.email = credentials.email;
+            if (user.fb_token) {
+                let profile = await this.getFbProfile(user.fb_token);
+                update.verified = Boolean(credentials.email === profile.email);
+            }
+        }
+        return users.updateOne({ _id: _id }, { $set: update });
     }
 
-    // VERIFY
+    // User Verification
 
-    static async verifyUserByEmail(_id) {}
-
-    // GET LOCAL PROFILE
-
-    static #getUserByEmail = (email) => {
-        return this.#getUserByFilter({ email: email });
+    static async sendUserVerificationMail(_id) {
+        let { email } = await this.getUserByObjectID(_id);
+        let template = await config.getUserVerificationMailTemplate();
+        let token = generateToken();
+        await users.updateOne({ _id: _id }, { $set: { verification: token } });
+        let params = { token: token };
+        await mail.send({
+            to: email,
+            subject: config.fillTemplate(template.subject, params),
+            content: config.fillTemplate(template.content, params)
+        });
     }
 
-    static #getUserByFacebookId = (id) => {
-        return this.#getUserByFilter({
-            "keys.facebook.data": id
+    static async verifyUserEmail(_id, token) {
+        let user = await this.getUserByObjectID(_id);
+        if (user.verification !== token) throw RESULT.INVALID_QUERY;
+        return users.updateOne({ _id: _id }, {
+            $set: { verified: true },
+            $unset: { verification: "" }
         });
+    }
+
+    // Recover Account
+
+    static async sendPasswordRecoveryMail(email) {
+        let template = await config.getPasswordRecoveryMailTemplate();
+        let token = generateToken();
+        await users.updateOne({ email: email }, { $set: { recovery: token } });
+        let params = { email: email, token: token };
+        await mail.send({
+            to: email,
+            subject: config.fillTemplate(template.subject, params),
+            content: config.fillTemplate(template.content, params)
+        });
+    }
+
+    static async resetPasswordWithToken(query) {
+        let user = await User.getUserByEmail(query.email);
+        if (!user.recovery) throw RESULT.NOT_ENABLED;
+        if (user.recovery !== query.token) throw RESULT.INVALID_QUERY;
+        if (!query.password) throw RESULT.INVALID_QUERY;
+        await users.updateOne({ email: query.email }, {
+            $set: { password: bcrypt.hashSync(query.password, 7) },
+            $unset: { recovery: "" }
+        });
+    }
+
+    // Get Local User
+
+    static getUserByEmail = (email) => {
+        return users.findOne({ email: email });
+    }
+
+    static getUserByFacebookId = (id) => {
+        return users.findOne({ "keys.facebook.data": id });
     }
 
     static getUserByObjectID (_id) {
-        return this.#getUserByFilter({ _id: db._id(_id) });
+        return users.findOne({ _id: _id });
     }
 
-    static #getUserByFilter = async (filter) => {
-        let user = db.collection("users").findOne(filter);
-        if (!user) throw RESULT.NOT_FOUND;
-        return user;
+    // Facebook
+
+    static connectToFacebook(_id, accessToken) {
+        return users.updateOne({ _id: _id }, {
+            $set: { fb_token: accessToken }
+        });
     }
 
-    // GET APP USER PROFILE
+    // Get Facebook Profile
 
-    static #getFacebookProfile = (accessToken) => {
-        return graph("GET /me", {
-            fields: ["id", "name", "email"].join(","),
-            access_token: accessToken
-        })
+    static getFbProfile(accessToken) {
+        return facebook.getUserProfile(accessToken);
     }
 
-    // TOKEN
+    // Sign Tokens
 
     static signUserToken(user) {
         return jwt.sign({
-            id: user._id,
-            name: user.name,
+            _id: user._id,
             email: user.email,
-            verified: user.verified,
-            privileges: user.privileges
-        }, security.jwt);
-    }
-
-    // INPUT VALIDATION
-
-    static #validateRegistration = (credential) => {
-        const schema = {
-            name: Joi.string().max(50).required(),
-            password: Joi.string().regex(/^[a-z\d\-_\s]{6,30}$/i).required(),
-            email: Joi.string().email().required()
-        };
-        return Joi.validate(credential, schema);
+            name: user.name || "",
+            verified: user.verified || false,
+            fb_token: user.fb_token || null,
+        }, security.secret);
     }
 
 }

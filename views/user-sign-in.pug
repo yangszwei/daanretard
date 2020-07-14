@@ -3,15 +3,12 @@ html
     head
         include head
         link(rel="stylesheet", href="/css/user-auth.css")
-        script(async, defer, src="/js/user-register.js")
+        script(async, defer, src="/js/user-sign-in.js")
     body
         main
-            h6.page-title 建立帳戶
+            h6.page-title 登入
             .form
                 .form-visual-section
-                    .control
-                        label(for="name") 姓名
-                        input#name(name="name", type="text")
                     .control
                         label(for="email") 電子郵件
                         input#email(name="email", type="email")
@@ -21,6 +18,6 @@ html
                     .control.centered
                         p#result
                     .control.centered
-                        button#submit.button-primary 建立帳戶
-                        a.button-link(href="/user/sign-in") 登入
+                        button#submit.button-primary 登入
+                        a.button-link(href="/user/recover") 忘記密碼
         include page

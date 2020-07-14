@@ -19,6 +19,9 @@
   },
   "homepage": "https://github.com/yangszwei/daan-retard#readme",
   "devDependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.10.4",
+    "@babel/runtime": "^7.10.4",
+    "babel-loader": "^8.1.0",
     "bcrypt": "^5.0.0",
     "browser-sync": "^2.26.7",
     "bson": "^4.0.4",
@@ -26,10 +29,11 @@
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
-    "koa-bodyparser": "^4.3.0",
     "koa-helmet": "^5.2.0",
+    "koa-send": "^5.0.0",
     "koa-static": "^5.0.0",
     "koa-views": "^6.3.0",
+    "mongo-sanitize": "^1.1.0",
     "mongodb": "^3.5.9",
     "nodemailer": "^6.4.10",
     "pug": "^3.0.0",
@@ -40,12 +44,16 @@
     "webpack-stream": "^5.2.1"
   },
   "dependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/plugin-transform-runtime": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
     "@koa/router": "^9.0.1",
     "del": "^5.1.0",
     "got": "^11.3.0",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.3.0",
     "gulp-sourcemaps": "^2.6.5",
+    "koa-better-body": "^3.3.9",
     "poststylus": "^1.0.0"
   }
 }

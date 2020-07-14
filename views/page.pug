@@ -1,0 +1,29 @@
+nav#topnav
+    .nav-title
+        button.button.button-icon.mobile-only#topnav-toggle-menu
+            .iconify(data-icon="mdi:menu")
+            .iconify(data-icon="mdi:close")
+        a.text.text-extra-large(href="/") 靠北大安4.0
+        a(href="/post/create").button.button-icon.mobile-only#topnav-create-post
+            .iconify(data-icon="mdi:pencil-box-outline")
+    .nav-menus
+        .nav-pages-menu
+            a.button-menu-item(href="/rules") 版規
+            if user
+                a.button-menu-item(href="/user/profile") 我的帳戶
+                a.button-menu-item(href="/post/overview") 我的貼文
+            else
+                a.button-menu-item(href="/user/sign-in") 登入
+                a.button-menu-item(href="/user/register") 建立帳戶
+            a.button-menu-item.desktop-only(href="/post/create") 建立貼文
+        .nav-social-menu
+            a.button-icon(href="https://facebook.com/daanretard", target="_blank")
+                .iconify(data-icon="mdi:facebook")
+            a.button-icon(href="https://www.instagram.com/dart_4.0", target="_blank")
+                .iconify(data-icon="mdi:instagram")
+footer#footer
+    .license
+        a(href="https://github.com/yangszwei", target="_blank") Szwei Yang
+        span #{new Date().getFullYear().toString()}
+    .info
+        a(href="https://github.com/yangszwei/daan-retard/tree/master", target="_blank") 原始碼

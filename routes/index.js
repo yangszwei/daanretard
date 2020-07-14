@@ -11,15 +11,15 @@ router.get("/", async (ctx) => {
 });
 
 router.get("/rules", async (ctx) => {
-    // TODO: load & cache rules on app start to ease database pressure
     await ctx.render("rules", {
         title: "版規",
-        rules: (await config.rules).data,
+        rules: await config.getPostingRules(),
         user: ctx.user
     });
 });
 
-router.use("/post", require("./post").routes());
 router.use("/user", require("./user").routes());
+router.use("/post", require("./post").routes());
+router.use("/resource", require("./resource").routes());
 
 module.exports = router;

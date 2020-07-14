@@ -1,23 +1,23 @@
-$centered-flex
+$center-align-column
     display flex
     flex-direction column
     align-items center
-    justify-content center
 
 main
-    @extends $centered-flex
-    & > *
-        display block
-        margin auto
-    header
-        @extends $centered-flex
-        min-height 20rem
-    #menu
-        @extends $centered-flex
-        min-height 10rem
+    @extend $center-align-column
+    & > div
+        @extend $center-align-column
+        flex-grow 1
+        width 100%
+        box-sizing border-box
+        justify-content center
+
+.landing-title
+    min-height 20rem
     img
-        margin: 1rem 0
         max-height 10rem
-    .link
-        padding 0.2rem
-        margin 1rem
+        max-width 100%
+        -webkit-user-drag none
+
+.landing-menu
+    min-height 10rem

@@ -1,29 +1,48 @@
 const { server, security } = require("./config");
 const Koa = require("koa"),
     http = require("http"),
-    bodyParser = require("koa-bodyparser"),
+    bodyParser = require("koa-better-body"),
     assets = require("koa-static"),
     views = require("koa-views"),
     path = require("path"),
     helmet = require("koa-helmet"),
-    database = require("./app/database"),
-    user = require("./app/user-auth"),
-    json = require("./app/json"),
-    error = require("./app/error");
-const app = new Koa(),
-    router = require("./routes/index");
+    database = require("./app/utils/database"),
+    loadUser = require("./middlewares/load-user"),
+    errorPage = require("./middlewares/error-page");
+const app = new Koa();
+
+!function json() {
+    app.use(async (ctx, next) => {
+        ctx.json = (object) => {
+            ctx.body = JSON.stringify(object);
+        };
+        await next();
+    });
+}();
+
+!function () {
+    if (!String.prototype.replaceAll) {
+        String.prototype.replaceAll = function(search, replacement) {
+            let target = this;
+            return target.replace(new RegExp(search, 'g'), replacement);
+        };
+    }
+}();
 
 async function initApp() {
     app.use(helmet());
-    app.use(bodyParser());
+    app.use(bodyParser({
+        formLimit : "15mb",
+        jsonLimit:"15mb",
+        textLimit:"15mb"
+    }));
     app.use(assets("public"));
     app.use(views(path.join(__dirname, "views"), { extension: "pug" }));
-    app.use(json());
+    app.use(loadUser());
+    app.use(errorPage());
     await database.connect();
-    app.use(user());
-    app.use(error());
-    app.use(router.routes());
-    app.use(router.allowedMethods());
+    app.use(require("./routes/index").routes());
+    app.use(require("./routes/index").allowedMethods());
     app.proxy = server.proxy;
     app.keys = security.keys;
 }

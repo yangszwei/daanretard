@@ -1,0 +1,312 @@
+// COLOR VARIABLE
+
+@require "color.styl"
+
+// LAYOUT VARIABLE
+
+super-small-screen-width = 320px
+small-screen-width = 480px
+page-menu-height = 3.2rem
+page-x-padding = var(--page-x-padding)
+transition-short = 120ms
+transition-medium = 240ms
+
+// LAYOUT PLACEHOLDER
+
+$center-flex
+    display flex
+    align-items center
+
+// PAGE LAYOUT
+
+:root
+    --page-x-padding 2rem
+
+@media (max-width: small-screen-width)
+    :root
+        --page-x-padding 1rem
+
+html
+    height 100%
+
+body
+    @extend .default
+    height 100%
+    margin 0
+    font-family "Noto Sans TC", sans-serif
+
+#topnav
+    @extend $center-flex
+    height page-menu-height
+    width 100%
+    position fixed 0 0
+    padding 0 page-x-padding
+    box-sizing border-box
+    & > div
+        @extend $center-flex
+        min-height 100%
+        background-color default
+    &.shadow, &.elevated
+        box-shadow 0 1px 3px -2px rgba(0,0,0,0.12), 0 1px 2px -2px rgba(0,0,0,0.24)
+
+#topnav .nav-title
+    flex-grow 1
+    z-index 2
+
+#topnav .nav-menus
+    z-index 1
+    & > div
+        @extend $center-flex
+        height 100%
+
+body > main
+    min-height 100%
+    padding 0 page-x-padding
+    padding-top page-menu-height
+    box-sizing border-box
+
+#footer
+    @extend $center-flex
+    height page-menu-height
+    width 100%
+    padding 0 page-x-padding
+    box-sizing border-box
+
+.centered
+    @extend $center-flex
+    flex-direction column
+
+// STYLE PLACEHOLDER
+
+.visible-on-active
+    &:not(.active)
+        display none !important
+
+
+// PAGE DEFAULT ELEMENT STYLE
+
+#topnav .nav-title
+    background-color default
+
+#topnav .nav-menus
+    a, button
+        margin-left 1rem
+
+@media (max-width: small-screen-width)
+    #topnav
+        display block
+        padding 0
+    #topnav .nav-title
+        width 100%
+        padding 0 page-x-padding
+        position absolute
+        justify-content space-between
+        box-sizing border-box
+    #topnav .nav-menus
+        align-items flex-end
+        width 100%
+        padding 0 page-x-padding
+        position absolute
+        transform "translateY(calc(%s - 100%))" % page-menu-height
+        transition all transition-medium
+        box-sizing border-box
+        &.active
+            transform translateY(page-menu-height)
+            box-shadow 0 1px 3px -2px rgba(0,0,0,0.12), 0 1px 2px -2px rgba(0,0,0,0.24)
+        .nav-pages-menu
+            display block
+            flex-grow 1
+        .nav-social-menu
+            @extend $center-flex
+            justify-content flex-end
+            margin-bottom 1.5rem
+            box-sizing border-box
+        .button-menu-item
+            font-size 1.25rem
+            width 100%
+            display block
+            padding-left 6px
+            margin 0.5rem 0 1.5rem
+        .button-icon
+            margin-left 1em
+    #topnav-toggle-menu
+        &.active > [data-icon="mdi:menu"],
+        &:not(.active) > [data-icon="mdi:close"]
+            display none
+
+// COMMON COMPONENT STYLE
+
+.iconify[data-icon="mdi:facebook"] *
+    color facebook !important
+
+.iconify[data-icon="mdi:instagram"] *
+    color instagram !important
+
+@media (min-width: small-screen-width)
+    .mobile-only
+        display none !important
+
+@media (max-width: small-screen-width)
+    .desktop-only
+        display none !important
+
+.text
+    color default-text
+    font-family "Noto Sans TC", sans-serif
+    text-decoration none
+
+.meta
+    @extend .text
+    font-size 0.8rem
+    color default-text
+
+.text-large
+    font-size 1.25rem
+
+.text-extra-large
+    font-size 1.5rem
+
+.text-title
+    font-size 2rem
+
+.page-title
+    font-size 1.75rem
+    margin 1.25rem
+    text-align center
+
+.link
+    @extend .text
+    color link
+    &:hover
+        text-decoration underline
+
+.button
+    font-size 1rem
+    border 0
+    outline 0
+    padding 0
+    cursor pointer
+
+.button-default
+    @extend .button
+    padding 0.6rem 2rem
+    margin 0.2rem 0
+    text-decoration none
+
+.button-link
+    @extend .link
+    margin 0.8rem 2rem
+
+.button-primary
+    @extend .button-default
+    color primary-text
+    background-color primary
+
+.button-menu-item
+    @extend .text, .button
+    opacity 0.6
+    box-sizing border-box
+    &:hover, &.active
+        opacity 1
+
+.button-icon
+    @extend .button
+    background-color transparent
+    font-size 1.75rem
+    .iconify *
+        color default-text
+
+textarea
+    @extend .text
+
+// COMPONENT: CARD
+
+.card
+    padding 0.6rem 0.8rem
+    border-radius 2px
+    margin 0.2rem 0
+
+.card-default
+    @extend .card
+    background-color default-card
+
+// COMPONENT: FORM
+
+.form
+    display flex
+    max-width 100%
+    flex-wrap wrap
+    justify-content center
+    box-sizing border-box
+
+@media (min-width: small-screen-width)
+    .form
+        padding 2rem 0
+
+.form .form-visual-section
+    display block
+    flex-basis 1
+    width 30rem
+    max-width 100%
+    padding 0 2rem
+    box-sizing border-box
+    & > div
+        margin-bottom 1rem
+
+.form .control
+    label
+        @extend .text
+        display block
+    input
+        @extend .text
+        display block
+        width 100%
+        outline none
+        border none
+        margin 0.2rem 0
+        margin-bottom calc(0.2rem + 1px)
+        padding 0.3rem 0.1rem
+        border-bottom 1px solid default-text-light
+        border-radius 0
+        background-color transparent
+        box-sizing border-box
+        font-size 1.25rem
+        &:focus
+            border-color default-text
+    input[type="file"].hidden
+        position absolute
+        width 1px
+        height 1px
+        padding 0
+        margin -1px
+        overflow hidden
+        clip rect(0,0,0,0)
+        border 0
+    textarea
+        @extend .text
+        display block
+        min-height 15rem
+        width 100%
+        outline none
+        margin 0.2rem 0
+        resize none
+        padding 0.3rem
+        border 1px solid default-text-light
+        border-radius 2px
+        box-sizing border-box
+        background-color transparent
+        -webkit-appearance none
+        font-size 1.25rem
+        &:focus
+            border-color default-text
+    .description
+        @extend .meta
+    .button-primary
+        float right
+
+@media (max-width: small-screen-width)
+    .form .form-visual-section
+        padding 0
+    .form .control .button-primary
+        width 100%
+        float none

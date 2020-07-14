@@ -1,0 +1,10 @@
+doctype html
+html
+    head
+        include head
+        link(rel="stylesheet", href="/css/error-page.css")
+    body
+        main
+            h6.error-page-title #{status}
+            p.error-page-content #{content}
+        include page

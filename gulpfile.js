@@ -1,3 +1,4 @@
+const { development } = require("./config");
 const { task, src, dest, series, parallel, watch } = require("gulp"),
     vinylPaths = require("vinyl-paths"),
     sourcemaps = require("gulp-sourcemaps"),
@@ -34,20 +35,40 @@ task("js:delete", () => {
         .pipe(vinylPaths(del));
 });
 
-task("js:build", () => {
+task("js:build", (done) => {
     return src("src/js/**/*.js")
-        .pipe(sourcemaps.init())
         .pipe(named())
         .pipe(webpack({
-            mode: "production",
+            ...(development ? {
+                mode: "development",
+                devtool: "eval-source-map"
+            } : {
+                mode: "production"
+            }),
+            module: {
+                rules: [
+                    {
+                        test: /\.js$/,
+                        exclude: /node_modules/,
+                        use: {
+                            loader: "babel-loader",
+                            options: {
+                                presets: ["@babel/preset-env"],
+                                plugins: [
+                                    "@babel/plugin-transform-runtime",
+                                    "@babel/plugin-proposal-optional-chaining"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
             optimization: {
                 minimize: true,
-                minimizer: [new TerserPlugin({
-                    sourceMap: false
-                })]
+                minimizer: [new TerserPlugin()]
             }
         }))
-        .pipe(sourcemaps.write("."))
+        .on("error", done)
         .pipe(dest("public/js"));
 });
 
@@ -72,10 +93,11 @@ task("reload", (done) => {{
     done();
 }})
 
-task("watch", () => {
+task("watch", (done) => {
     let { browserSync } = require("./config").external;
     sync.init(browserSync);
     watch("src/js/**/*.js", series("js", "reload"));
     watch("src/css/**/*.styl", series("css", "reload"));
     watch("views/*.pug", series("reload"));
+    done();
 });

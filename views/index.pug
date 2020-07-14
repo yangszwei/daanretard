@@ -5,14 +5,13 @@ html
         link(rel="stylesheet", href="/css/index.css")
     body
         main
-            header
+            .landing-title
                 img(src="/images/icon_331.png")
-                h4 匿名發文系統
-                p.meta #{version}
-            section#menu
+                h1.title 匿名投稿系統
+            .landing-menu
                 if user
-                    a.button-default.primary(href="/post/create") 建立貼文
+                    a.button-primary(href="/post/create") 建立貼文
                 else
-                    a.button-default.primary(href="/user/register") 建立帳戶
-                    a.link-default(href="/post/create") 建立貼文
-        include page-basic
+                    a.button-primary(href="/user/register") 建立帳戶
+                    a.button-link(href="/post/create") 建立貼文
+        include page

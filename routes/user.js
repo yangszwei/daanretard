@@ -1,100 +1,60 @@
-const { external: { facebook } } = require("../config");
 const Router = require("@koa/router");
 const User = require("../app/user"),
-    RESULT = require("../app/result-code");
+    { RESULT } = require("../app/utils/codes");
 const router = new Router();
-const MILLISECONDS_IN_A_MONTH = 60 * 60 * 24 * 30 * 1000;
+const COOKIE_OPTIONS = {
+    httpOnly: true,
+    signed: true,
+    maxAge: 86400 * 30 * 2 * 1000 // 60 days in milliseconds
+};
 
-function getCookieOption() {
-    return {
-        httpOnly: true,
-        signed: true,
-        maxAge: MILLISECONDS_IN_A_MONTH * 2000
-    };
-}
-
-router.get("/", async (ctx) => {
-    ctx.redirect(ctx.user ? "/user/me" : "/user/register");
-});
-
-router.get("/login", async (ctx) => {
-    if (ctx.user) {
-        ctx.redirect("/user");
-        return;
-    }
-    await ctx.render("user-login", {
-        title: "登入",
-        appId: facebook.appId
+router.get("/sign-in", async (ctx) => {
+    if (ctx.user) ctx.redirect("/user/profile");
+    await ctx.render("user-sign-in", {
+        title: "登入"
     });
 });
 
 router.get("/register", async (ctx) => {
-    if (ctx.user) {
-       ctx.redirect("/user/me");
-       return;
-    }
+    if (ctx.user) ctx.redirect("/user/profile");
     await ctx.render("user-register", {
-        title: "建立帳戶",
-        appId: facebook.appId
+        title: "建立帳戶"
     });
 });
-
-router.get("/me", async (ctx) => {
-    if (!ctx.user) {
-        ctx.redirect("/user");
-        return;
-    }
-    try {
-        await ctx.render("user-me", {
-            title: "我的帳戶",
-            user: await User.getUserByObjectID(ctx.user.id)
-        });
-    } catch(err) {
-        ctx.throw(500);
-    }
-})
 
 function handleError(err) {
     if (typeof err === "number") {
         return { code: err };
     } else {
         console.error(err);
-        return { code: RESULT.INTERNAL_ERROR };
+        return { code: RESULT.FATAL_ERROR };
     }
 }
 
-router.post("/login", async (ctx) => {
+router.post("/sign-in", async (ctx) => {
     try {
-        let { email, password } = ctx.request.body;
-        let user = await User.loginWithPassword(email, password);
-        let token = User.signUserToken(user);
-        ctx.cookies.set("user", token, getCookieOption());
-        await ctx.json({ code: RESULT.SUCCESS });
-    } catch(err) {
-        if (err === RESULT.NOT_FOUND) {
-            await ctx.json({ code: RESULT.INVALID_INPUT });
-        } else {
-            await ctx.json(handleError(err));
+        if (!ctx.user) {
+            let { email, password } = ctx.request.fields;
+            let token = await User.signIn(email, password);
+            ctx.cookies.set("user", token, COOKIE_OPTIONS);
+            await ctx.json({ code: RESULT.SUCCESS });
         }
+    } catch (err) {
+        await ctx.json(handleError(err));
     }
-});
-
-router.get("/logout", async (ctx) => {
-    ctx.cookies.set("user", null);
-    ctx.cookies.set("updated", null);
-    ctx.redirect("/");
 });
 
 router.post("/register", async (ctx) => {
     try {
-        let user = await User.registerWithPassword(ctx.request.body);
-        let token = User.signUserToken(user);
-        ctx.cookies.set("user", token, getCookieOption());
-        await ctx.json({ code: RESULT.SUCCESS });
+        if (!ctx.user) {
+            let token = await User.register(ctx.request.fields);
+            ctx.cookies.set("user", token, COOKIE_OPTIONS);
+            await ctx.json({ code: RESULT.SUCCESS });
+        }
     } catch(err) {
         if (err.isJoi) {
             await ctx.json({
-                code: RESULT.INVALID_INPUT,
+                code: RESULT.INVALID_QUERY,
                 details: err.details
             });
         } else {
@@ -103,15 +63,87 @@ router.post("/register", async (ctx) => {
     }
 });
 
-router.post("/oauth/facebook", async (ctx) => {
+router.post("/recover", async (ctx) => {
     try {
-        let { accessToken } = ctx.request.body;
-        let user = await User.continueWithFacebook(accessToken);
-        let token = User.signUserToken(user);
-        ctx.cookies.set("user", token, getCookieOption());
+        if (!ctx.user) {
+            await User.sendPasswordRecoveryMail(ctx.request.fields.email);
+            await ctx.json({ code: RESULT.SUCCESS });
+        }
+    } catch(err) {
+        await ctx.json(handleError(err));
+    }
+});
+
+router.post("/reset-password", async (ctx) => {
+    try {
+        if (ctx.request.fields.token) {
+            await User.resetPasswordWithToken({
+                password: ctx.request.fields.password,
+                email: ctx.request.fields.email,
+                token: ctx.request.fields.token
+            });
+            await ctx.json({ code: RESULT.SUCCESS });
+        }
+    } catch(err) {
+        await ctx.json(handleError(err));
+    }
+})
+
+router.post("/sign-in/facebook", async (ctx) => {
+    try {
+        let { access_token } = ctx.request.fields;
+        let token = await User.signInWithFacebook(access_token);
+        ctx.cookies.set("user", token, COOKIE_OPTIONS);
         await ctx.json({ code: RESULT.SUCCESS });
     } catch(err) {
         await ctx.json(handleError(err));
+    }
+});
+
+router.post("/verify", async (ctx) => {
+    try {
+        await User.sendUserVerificationMail(ctx.user._id);
+        await ctx.json({ code: RESULT.SUCCESS });
+    } catch(err) {
+        await ctx.json(handleError(err));
+    }
+});
+
+router.post("/verify/complete", async (ctx) => {
+    try {
+        let { token } = ctx.request.fields;
+        await User.verifyUserEmail(ctx.user._id, token);
+        await ctx.json({ code: RESULT.SUCCESS });
+    } catch(err) {
+        await ctx.json(handleError(err));
+    }
+});
+
+router.post("/connect/facebook", async (ctx) => {
+    try {
+        if (ctx.user) {
+            let { access_token } = ctx.request.fields;
+            await User.connectToFacebook(ctx.user._id, access_token);
+            await ctx.json({ code: RESULT.SUCCESS });
+        }
+    } catch(err) {
+        await ctx.json(handleError(err));
+    }
+});
+
+router.post("/profile/update", async (ctx) => {
+    try {
+        await User.updateUserProfile(ctx.user._id, ctx.request.fields);
+        await ctx.json({ code: RESULT.SUCCESS });
+    } catch(err) {
+        if (err.isJoi) {
+            await ctx.json({
+                code: RESULT.INVALID_QUERY,
+                details: err.details
+            });
+        } else {
+            await ctx.json(handleError(err));
+        }
     }
 });
 

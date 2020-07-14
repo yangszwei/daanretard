@@ -1,19 +1,16 @@
-$centered-text
+small-screen-width = 480px
+
+$content
     width 28rem
-    max-width 100%
     text-align center
+    margin 1.5rem auto
+    max-width 100%
 
-main .item
-    display flex
-    flex-direction column
-    align-items center
-    h5
-        @extends $centered-text
-        margin 0.5rem auto
-    p
-        @extends $centered-text
-        margin 1rem auto
+main
+    .title
+        @extend $content
+        font-size 1.5rem
 
-@media (max-width: 480px)
-    main
-        padding-bottom 1rem
+    .content
+        @extend $content
+        font-size 1rem

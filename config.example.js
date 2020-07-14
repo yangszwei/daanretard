@@ -1,16 +1,22 @@
 const config = {
     app: {
-        version: ""
+        version: "0.2.0",
+        url: "",
+        mailAddress: ""
     },
+    development: true,
     server: {
         port: 8000,
         proxy: true
     },
     security: {
-        jwt: "",
+        secret: "",
         keys: [ "" ]
     },
     external: {
+        mail: {
+            // directly passed to nodemailer.createTransport
+        },
         database: {
             // mongodb
             user: "",
@@ -20,11 +26,12 @@ const config = {
             port: 27017
         },
         facebook: {
+            pageId: "",
             appId: "",
             secret: ""
         },
         browserSync: {
-            // browserSync config here
+            // passed directly to browserSync.init
         }
     }
 };

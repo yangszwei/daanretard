@@ -2,29 +2,40 @@ doctype html
 html
     head
         include head
-        script(src="/js/post-create.js")
+        link(rel="stylesheet", href="/css/post-create.css")
+        script(async, defer, src="/js/post-create.js")
     body
-        main.centered
-            h4.page-title 建立貼文
-            .form-basic.form-large
-                unless user
-                    .form-control
-                        label(for="email") 電子郵件
-                        input#email(name="email", type="email")
-                .form-control
-                    label(for="content") 貼文內容
-                    textarea#content
-                .form-control
-                    label(for="media") 上傳圖片 (0 / 10MB)
-                    .images-preview.centered
-                        .container
-                        .empty
-                            p 上傳圖片後將可於此處預覽
-                    .container.centered
-                        label.button-default.secondary 上傳圖片
-                            input#media(type="file", multiple, accept="image/*")
-                .form-control.centered
-                    button#submit.button-default.primary 送出貼文
-                .form-control.centered
-                    p.form-message
-        include page-basic
+        main
+            h6.page-title 建立貼文
+            .form
+                .form-visual-section
+                    unless user
+                        .card-default
+                            .control
+                                label(for="email") 電子郵件
+                                input#email(name="email", type="email")
+                            .control
+                                p.description
+                                    | 我們將於他人對此貼文提出問題時，以此電子郵件聯絡您。
+                                    | 於完成驗證後，您的貼文才會被發佈。
+                                    a.link(href="/user/sign-in", target="_self") 登入
+                                    | 並完成一次驗證後，即可跳過此步驟。
+                    .control
+                        label(for="post-content")
+                            | 貼文內容
+                            span#post-content-size
+                        textarea#post-content
+                .form-visual-section
+                    .control
+                        label(for="images")
+                            | 附加圖片
+                            span#images-size
+                        .images-preview-box
+                        label(for="images").add-image.images-preview-box-empty
+                            p 點擊此處以上傳圖片
+                        input#images.hidden(type="file", multiple)
+                    .control
+                        p#submit-result
+                    .control
+                        button#submit-post.button-primary 提交
+        include page

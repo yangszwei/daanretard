@@ -1,6 +1,8 @@
+const { app } = require("../config");
 const Router = require("@koa/router");
+const Post = require("../app/post"),
+    { RESULT } = require("../app/utils/codes");
 const router = new Router();
-const PostSubmission = require("../app/post-submission");
 
 router.get("/create", async (ctx) => {
     await ctx.render("post-create", {
@@ -9,31 +11,42 @@ router.get("/create", async (ctx) => {
     });
 });
 
-router.post("/create", async (ctx) => {
-    let { content, media, email } = ctx.request.body;
-    let post = {
-        content: content || "",
-        media: media || [],
-        ...(email ? { email: email } : {}),
-        verified: Boolean(ctx.user)
-    };
-    post.author = ctx.user || "email";
-    if (!ctx.user && !email) {
-        await ctx.json({
-            status: "failed",
-            reason: "Invalid Identity"
-        });
+function handleError(err) {
+    if (typeof err === "number") {
+        return { code: err };
     } else {
-        let result = await PostSubmission.create(ctx.request.body);
-        if (!ctx.user) {
+        console.error(err);
+        return { code: RESULT.FATAL_ERROR };
+    }
+}
+
+router.post("/submit", async (ctx) => {
+    let submission = ctx.request.fields;
+    try {
+        let result = await Post.submit({
+            content: submission.content,
+            images: submission.images,
+            email: submission.email || null
+        }, ctx.user);
+        await ctx.json({
+            code: RESULT.SUCCESS,
+            redirect_url: `${app.url}/post/submission_id/${result}`
+        });
+    } catch(err) {
+        if (typeof err === "string") {
             await ctx.json({
-                status: "success",
-                id: result.insertedId
+                code: RESULT.INVALID_QUERY,
+                details: err
             });
         } else {
-            await ctx.json({ status: "success" });
+            await ctx.json(handleError(err));
         }
+
     }
 });
+
+router.post("/review", async (ctx) => {
+
+})
 
 module.exports = router;
