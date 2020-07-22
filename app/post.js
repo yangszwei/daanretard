@@ -1,7 +1,8 @@
 const Facebook = require("./utils/facebook"),
     { RESULT } = require("./utils/codes"),
-    Resource = require("./resource"),
     database = require("./utils/database"),
+    mail = require("./utils/mail"),
+    Config = require("./config"),
     crypto = require("crypto"),
     BSON = require("bson");
 const posts = database.collection("posts");
@@ -21,6 +22,10 @@ function validatePost(post) {
     return post;
 }
 
+function generateToken() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 class Post {
 
     static async submit(post, author) {
@@ -29,15 +34,27 @@ class Post {
         const cleanPost = {
             id: id,
             stage: "submission",
-            author: (author && author._id) || null,
             content: post.content,
             images: post.images,
             submit_time: Date.now()
-        };
-        let isValidAuthor = author && author._id;
-        cleanPost.verified = Boolean(isValidAuthor);
-        if (!isValidAuthor) cleanPost.email = post.email;
-        await posts.insertOne(cleanPost);
+        }
+        if (author) {
+            cleanPost.author = author._id;
+            cleanPost.verified = true;
+            await posts.insertOne(cleanPost);
+        } else {
+            let filter = {
+                stage: "not submitted",
+                email: post.email,
+                verified: true
+            };
+            console.log(await posts.findOne(filter))
+            if (await posts.findOne(filter)) {
+                await posts.updateOne(filter, { $set: cleanPost });
+            } else {
+                throw RESULT.NOT_EXIST;
+            }
+        }
         return id;
     }
 
@@ -66,15 +83,21 @@ class Post {
         });
     }
 
+    static async listNotReviewed() {
+
+    }
+
     static async publish(id) {
         let post = await this.getSubmissionById();
         if (post.stage !== "pending post" ||
             post.review.result !== "approved") throw RESULT.UNAUTHORIZED;
         if (post.images) {
-            let urls = await Resource.uploadMultiple();
+            // let urls = await Resource.uploadMultiple();
             post.attachMedia = await Facebook.uploadImages(urls);
         }
-        let response = await Facebook.publishPost(post);
+        let response = await Facebook.publishPost({
+
+        });
         await posts.updateOne({ id: id }, {
             $setOrInsert: {
                 stage: "published",
@@ -87,6 +110,48 @@ class Post {
 
     static getSubmissionById(id) {
         return posts.findOne({ id: id });
+    }
+
+    static async sendVerificationEmail(email) {
+        let token = generateToken();
+        if (!email) throw RESULT.INVALID_QUERY;
+        const post = {
+            stage: "not submitted",
+            email: email,
+            token: token,
+            verified: false
+        };
+        try {
+            let filter = {
+                email: email,
+                stage: "not submitted"
+            }
+            await posts.findOne(filter);
+            await posts.deleteOne(filter);
+        } catch(err) {}
+        await posts.insertOne(post);
+        let template = await Config.getEmailVerificationTemplate();
+        let params = { token: token };
+        await mail.send({
+            to: email,
+            subject: Config.fillTemplate(template.subject, params),
+            content: Config.fillTemplate(template.content, params)
+        });
+    }
+
+    static async verifyEmail(token, email) {
+        let filter = {
+            email: email,
+            token: token,
+            stage: "not submitted"
+        }
+        if (!await posts.findOne(filter)) {
+            throw RESULT.INVALID_QUERY;
+        }
+        await posts.updateOne(filter, {
+            $set: { verified: true },
+            $unset: { token: "" }
+        });
     }
 
 }

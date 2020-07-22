@@ -76,6 +76,15 @@ body > main
     @extend $center-flex
     flex-direction column
 
+.centered-all
+    @extend $center-flex
+    flex-direction column
+    justify-content center
+
+.flex-end
+    @extend $center-flex
+    justify-content flex-end
+
 // STYLE PLACEHOLDER
 
 .visible-on-active
@@ -134,6 +143,10 @@ body > main
         &:not(.active) > [data-icon="mdi:close"]
             display none
 
+#footer
+    @extend $center-flex
+    justify-content center
+
 // COMMON COMPONENT STYLE
 
 .iconify[data-icon="mdi:facebook"] *
@@ -179,6 +192,10 @@ body > main
     color link
     &:hover
         text-decoration underline
+
+button[disabled]
+    cursor "default"
+    opacity 0.4
 
 .button
     font-size 1rem
@@ -250,7 +267,7 @@ textarea
     max-width 100%
     padding 0 2rem
     box-sizing border-box
-    & > div
+    & > div, & .control
         margin-bottom 1rem
 
 .form .control
@@ -301,8 +318,7 @@ textarea
             border-color default-text
     .description
         @extend .meta
-    .button-primary
-        float right
+
 
 @media (max-width: small-screen-width)
     .form .form-visual-section

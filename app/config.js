@@ -42,7 +42,18 @@ class Configs {
 
     static async setUserVerificationMailTemplate(data) {
         let config = new Config("user verification mail");
-        return await config.set(data) || [];
+        return await config.set(data);
+    }
+
+    // post - email verification template
+    static async getEmailVerificationTemplate() {
+        let config = new Config("post email verification mail");
+        return await config.get() || [];
+    }
+
+    static async setEmailVerificationMailTemplate(data) {
+        let config = new Config("post email verification mail");
+        return await config.set(data);
     }
 
     // password recovery mail template
@@ -54,7 +65,17 @@ class Configs {
 
     static async setPasswordRecoveryMailTemplate(data) {
         let config = new Config("password recovery mail");
-        return await config.set(data) || { subject: "", content: "" };
+        return await config.set(data);
+    }
+
+    static async getPostTemplate() {
+        let config = new Config("password recovery mail");
+        return await config.set(data);
+    }
+
+    static async setPostTemplate(data) {
+        let config = new Config("password recovery mail");
+        return await config.get();
     }
 
     static fillTemplate(template, params) {

@@ -1,0 +1,37 @@
+main
+    display flex
+    min-height 20rem
+    flex-direction column
+    align-items center
+    justify-content center
+    &::before {
+        content ""
+        position absolute
+        top 0
+        left 0
+        width 100%
+        height 100%
+        opacity .1
+        z-index -1
+        background url("/images/icon_331.png") no-repeat
+        background-size 18rem
+        background-position center
+    }
+    .page-title
+        font-size 2.75rem
+        margin 0
+        margin-bottom 1rem
+        text-align center
+        z-index 100
+    .countdown
+        font-size 1.25rem
+        margin 2rem 0
+        text-align center
+        z-index 100
+    .kotori
+        position fixed
+        bottom 0
+        left 0
+        max-height 6rem
+        z-index 30
+        transition-duration 100ms

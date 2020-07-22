@@ -10,8 +10,7 @@ nav#topnav
         .nav-pages-menu
             a.button-menu-item(href="/rules") 版規
             if user
-                a.button-menu-item(href="/user/profile") 我的帳戶
-                a.button-menu-item(href="/post/overview") 我的貼文
+                a.button-menu-item(href="/user/overview") 我的帳戶
             else
                 a.button-menu-item(href="/user/sign-in") 登入
                 a.button-menu-item(href="/user/register") 建立帳戶
@@ -22,8 +21,6 @@ nav#topnav
             a.button-icon(href="https://www.instagram.com/dart_4.0", target="_blank")
                 .iconify(data-icon="mdi:instagram")
 footer#footer
-    .license
-        a(href="https://github.com/yangszwei", target="_blank") Szwei Yang
-        span #{new Date().getFullYear().toString()}
-    .info
-        a(href="https://github.com/yangszwei/daan-retard/tree/master", target="_blank") 原始碼
+    a.meta.link(href="https://github.com/yangszwei", target="_blank") Szwei Yang
+    span.meta &nbsp;#{new Date().getFullYear().toString()}&nbsp;|&nbsp;
+    a.meta.link(href="https://github.com/yangszwei/daan-retard/tree/master", target="_blank") 原始碼

@@ -7,6 +7,6 @@ work in progress
 ## Installation
 
 - add config.js (based on config.example.js, all fields are required)
-- run `npm i`
+- run `npm install`
 - run `gulp build`
 - run `node index.js`

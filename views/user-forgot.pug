@@ -1,0 +1,17 @@
+doctype html
+html
+    head
+        include head
+        link(rel="stylesheet", href="/css/user-auth.css")
+        script(async, defer, src="/js/user-register.js")
+    body
+        main
+            h6.page-title 忘記密碼
+            .form
+                .form-visual-section
+                    .control
+                        label(for="email") 電子郵件
+                        input#email(name="email", type="email")
+                    .control.centered
+                        button#send-code.button-primary 重設密碼
+        include page

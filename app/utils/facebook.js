@@ -14,6 +14,7 @@ class GraphRequest {
 
     async send() {
         let query = this.constructor.stringifyQuery(this.query);
+        console.log(`${this.url}?${query}`)
         let response = await got[this.method](`${this.url}?${query}`);
         return JSON.parse(response.body);
     }

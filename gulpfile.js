@@ -43,7 +43,8 @@ task("js:build", (done) => {
                 mode: "development",
                 devtool: "eval-source-map"
             } : {
-                mode: "production"
+                mode: "production",
+                devtool: "source-map"
             }),
             module: {
                 rules: [
@@ -65,7 +66,14 @@ task("js:build", (done) => {
             },
             optimization: {
                 minimize: true,
-                minimizer: [new TerserPlugin()]
+                minimizer: [new TerserPlugin({
+                    terserOptions: {
+                        output: {
+                            comments: false
+                        }
+                    },
+                    extractComments: false
+                })]
             }
         }))
         .on("error", done)

@@ -8,7 +8,8 @@ const Koa = require("koa"),
     helmet = require("koa-helmet"),
     database = require("./app/utils/database"),
     loadUser = require("./middlewares/load-user"),
-    errorPage = require("./middlewares/error-page");
+    errorPage = require("./middlewares/error-page"),
+    comingSoon = require("./middlewares/coming-soon");
 const app = new Koa();
 
 !function json() {
@@ -38,6 +39,8 @@ async function initApp() {
     }));
     app.use(assets("public"));
     app.use(views(path.join(__dirname, "views"), { extension: "pug" }));
+    // COMING SOON
+    app.use(comingSoon());
     app.use(loadUser());
     app.use(errorPage());
     await database.connect();

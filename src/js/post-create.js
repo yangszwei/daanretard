@@ -17,6 +17,14 @@ function toReadableSize(bytes) {
     return bytes.toFixed(2) + ["B", "KB", "MB"][Math.min(i, 2)];
 }
 
+function sendVerificationMail(email) {
+
+}
+
+function verify(email, code) {
+
+}
+
 addEventListener("load", () => {
 
     let images = {};
@@ -147,6 +155,57 @@ addEventListener("load", () => {
           body: createFormData()
       });
       handleResult(await response.json());
+    });
+
+    const sendCodeButton = document.getElementById("send-code"),
+        resendCodeButton = document.getElementById("resend-code"),
+        submitCodeButton = document.getElementById("submit-code"),
+        submitCodeResult = document.getElementById("submit-code-result");
+
+    if (!sendCodeButton) {
+        submitButton.removeAttribute("disabled");
+        return;
+    }
+
+    async function sendCode() {
+        let form = new FormData();
+        form.append("email", emailInput.value || "");
+        let response = await fetch("/post/send-verification", {
+            method: "POST",
+            body: form
+        });
+        let result = await response.json();
+        if (result.code) submitResult.innerText = "驗證碼寄送失敗";
+        else {
+            let cls = (q) => document.getElementsByClassName(q)[0];
+            cls("enter-email").classList.remove("active");
+            cls("enter-code").classList.add("active");
+        }
+    }
+
+    sendCodeButton.addEventListener("click", sendCode);
+    resendCodeButton.addEventListener("click", sendCode);
+
+    submitCodeButton.addEventListener("click", async () => {
+        let code = document.getElementById("verification-code").value;
+        let form = new FormData();
+        form.append("token", code || "");
+        form.append("email", emailInput.value || "");
+        let response = await fetch("/post/verify-email", {
+            method: "POST",
+            body: form
+        });
+        let result = await response.json();
+        if (result.code === RESULT.INVALID_QUERY) {
+            submitCodeResult.innerHTML = "驗證碼錯誤"
+        } else if (result.code) {
+            submitCodeResult.innerHTML = `伺服器錯誤（代碼：${result.code}）`;
+        } else {
+            let cls = (q) => document.getElementsByClassName(q)[0];
+            cls("enter-code").classList.remove("active");
+            cls("email-verified").classList.add("active");
+            submitButton.removeAttribute("disabled");
+        }
     });
 
 });

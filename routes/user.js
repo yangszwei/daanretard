@@ -10,15 +10,36 @@ const COOKIE_OPTIONS = {
 
 router.get("/sign-in", async (ctx) => {
     if (ctx.user) ctx.redirect("/user/profile");
-    await ctx.render("user-sign-in", {
+    else await ctx.render("user-sign-in", {
         title: "登入"
     });
 });
 
 router.get("/register", async (ctx) => {
     if (ctx.user) ctx.redirect("/user/profile");
-    await ctx.render("user-register", {
+    else await ctx.render("user-register", {
         title: "建立帳戶"
+    });
+});
+
+router.get("/forgot", async (ctx) => {
+    if (ctx.user) ctx.redirect("/user/profile");
+    else await ctx.render("user-forgot", {
+        title: "忘記密碼"
+    });
+});
+
+router.get("/reset-password", async (ctx) => {
+    await ctx.render("user-reset-password", {
+        title: "重設密碼"
+    });
+});
+
+router.get("/profile", async (ctx) => {
+    if (!ctx.user) ctx.redirect("/user/sign-in");
+    else await ctx.render("user-profile", {
+        title: ctx.user.name,
+        user: ctx.user
     });
 });
 

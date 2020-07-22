@@ -3,6 +3,18 @@
 super-small-screen-width = 320px
 small-screen-width = 480px
 
+.card-default .container:not(.active)
+    display none !important
+
+.enter-code .flex-end button
+    margin-left 0.6rem
+
+@media (max-width: small-screen-width)
+    .enter-code .flex-end
+        display block
+        button
+            margin-left 0
+
 .add-image
     padding 0.3rem 0.8rem
     margin 0.5rem 0

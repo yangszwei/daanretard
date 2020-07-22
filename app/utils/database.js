@@ -20,6 +20,10 @@ class Collection {
         return this.collection.updateOne(filter, doc, { upsert: true });
     }
 
+    async list(filter) {
+
+    }
+
     async findOne(filter) {
         filter = Collection.sanitizeQuery(filter);
         let doc = await this.collection.findOne(filter);

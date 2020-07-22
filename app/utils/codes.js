@@ -16,6 +16,7 @@ module.exports = {
         PENDING: 1,
         REJECTED: 2,
         REMOVED: 3,
-        INACCESSIBLE: 4
+        INVALID: 4,
+        INACCESSIBLE: 5
     }
 };
