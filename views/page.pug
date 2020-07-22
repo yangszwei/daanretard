@@ -15,12 +15,11 @@ nav#topnav
                 a.button-menu-item(href="/user/sign-in") 登入
                 a.button-menu-item(href="/user/register") 建立帳戶
             a.button-menu-item.desktop-only(href="/post/create") 建立貼文
+            if (user && user.role === "Administrator")
+                a.button-menu-item(href="/admin") 管理系統
         .nav-social-menu
             a.button-icon(href="https://facebook.com/daanretard", target="_blank")
                 .iconify(data-icon="mdi:facebook")
             a.button-icon(href="https://www.instagram.com/dart_4.0", target="_blank")
                 .iconify(data-icon="mdi:instagram")
-footer#footer
-    a.meta.link(href="https://github.com/yangszwei", target="_blank") Szwei Yang
-    span.meta &nbsp;#{new Date().getFullYear().toString()}&nbsp;|&nbsp;
-    a.meta.link(href="https://github.com/yangszwei/daan-retard/tree/master", target="_blank") 原始碼
+include footer

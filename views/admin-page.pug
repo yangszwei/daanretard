@@ -1,0 +1,19 @@
+nav#topnav
+    .nav-title
+        button.button.button-icon.mobile-only#topnav-toggle-menu
+            .iconify(data-icon="mdi:menu")
+            .iconify(data-icon="mdi:close")
+        a.text.text-extra-large(href="/admin") 靠北大安4.0
+        a(href="/admin/review").button.button-icon.mobile-only#topnav-create-post
+            .iconify(data-icon="mdi:checkbox-marked-outline")
+    .nav-menus
+        .nav-pages-menu
+            a.button-menu-item(href="/admin/review") 管理貼文
+            a.button-menu-item(href="/admin/settings") 系統設定
+            a.button-menu-item(href="/") 回首頁
+        .nav-social-menu
+            a.button-icon(href="https://facebook.com/daanretard", target="_blank")
+                .iconify(data-icon="mdi:facebook")
+            a.button-icon(href="https://www.instagram.com/dart_4.0", target="_blank")
+                .iconify(data-icon="mdi:instagram")
+include footer

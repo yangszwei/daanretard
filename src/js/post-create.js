@@ -17,14 +17,6 @@ function toReadableSize(bytes) {
     return bytes.toFixed(2) + ["B", "KB", "MB"][Math.min(i, 2)];
 }
 
-function sendVerificationMail(email) {
-
-}
-
-function verify(email, code) {
-
-}
-
 addEventListener("load", () => {
 
     let images = {};
@@ -139,28 +131,31 @@ addEventListener("load", () => {
             } else {
                 submitResult.innerText = `提交貼文失敗(錯誤代碼：${result.code})`;
             }
+            submitButton.removeAttribute("disabled");
         } else {
             location.href = result.redirect_url;
         }
     }
 
     submitButton.addEventListener("click", async () => {
-      let error = hasInvalid();
-      if (error) {
-          submitResult.innerText = error;
-          return;
-      }
-      let response = await fetch("/post/submit", {
-          method: "POST",
-          body: createFormData()
-      });
-      handleResult(await response.json());
+        submitButton.setAttribute("disabled", "disabled");
+        let error = hasInvalid();
+        if (error) {
+            submitResult.innerText = error;
+            return;
+        }
+        let response = await fetch("/post/submit", {
+            method: "POST",
+            body: createFormData()
+        });
+        handleResult(await response.json());
     });
 
     const sendCodeButton = document.getElementById("send-code"),
         resendCodeButton = document.getElementById("resend-code"),
         submitCodeButton = document.getElementById("submit-code"),
-        submitCodeResult = document.getElementById("submit-code-result");
+        submitCodeResult = document.getElementById("submit-code-result"),
+        sendCodeResult = document.getElementById("send-code-result");
 
     if (!sendCodeButton) {
         submitButton.removeAttribute("disabled");
@@ -175,7 +170,7 @@ addEventListener("load", () => {
             body: form
         });
         let result = await response.json();
-        if (result.code) submitResult.innerText = "驗證碼寄送失敗";
+        if (result.code) sendCodeResult.innerText = "驗證碼寄送失敗";
         else {
             let cls = (q) => document.getElementsByClassName(q)[0];
             cls("enter-email").classList.remove("active");

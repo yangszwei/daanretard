@@ -24,7 +24,6 @@
     "babel-loader": "^8.1.0",
     "bcrypt": "^5.0.0",
     "browser-sync": "^2.26.7",
-    "bson": "^4.0.4",
     "gulp-stylus": "^2.7.0",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.1",

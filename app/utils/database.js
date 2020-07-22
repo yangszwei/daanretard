@@ -20,8 +20,11 @@ class Collection {
         return this.collection.updateOne(filter, doc, { upsert: true });
     }
 
-    async list(filter) {
-
+    find(filter, pageSize = 20, page = 0) {
+        return this.collection.find(filter)
+            .limit(pageSize)
+            .skip(pageSize * page)
+            .toArray();
     }
 
     async findOne(filter) {

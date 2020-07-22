@@ -1,0 +1,82 @@
+@require "color.styl"
+
+small-screen-width = 480px
+
+body > main
+    display flex
+    flex-direction column
+    align-items center
+    width 100%
+
+.posts
+    max-width 100%
+
+.post-card
+    width 46rem
+    max-width 100%
+    background default-card
+    box-sizing border-box
+    margin 1rem 0
+    header
+        height 3rem
+        display flex
+        align-items center
+        padding 0 0.8rem
+    main
+        height 16rem
+        display flex
+        align-items center
+        flex-wrap wrap
+        background rgba(white, 0.5)
+        & > div
+            height 100%
+            width 23rem
+            padding 0 0.8rem
+            box-sizing border-box
+            overflow auto
+        .container.left
+            .post-images
+                display flex
+                flex-wrap wrap
+                img
+                    max-height 5rem
+                    margin 0 0.2rem 0.2rem 0
+        .post-content
+            p
+                word-wrap break-word
+                line-break anywhere
+    footer
+        height 3rem
+        display flex
+        align-items center
+        justify-content flex-end
+        padding 0 0.8rem
+        button
+            height 100%
+            padding 0 1rem
+        button:hover
+            background rgba(white, 0.75)
+        .approve *
+            color green
+        .reject *
+            color red
+
+@media (max-width: 60rem)
+    .post-card
+        width 23rem
+        max-width 100%
+        main
+            height auto
+
+@media (max-width: small-screen-width)
+    .posts
+        width 100%
+        box-sizing border-box
+    .post-card
+        width 100%
+        main > div
+            width 100%
+        footer
+            justify-content space-evenly
+            button
+                padding 0 3rem

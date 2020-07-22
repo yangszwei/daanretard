@@ -201,6 +201,7 @@ class User {
             name: user.name || "",
             verified: user.verified || false,
             fb_token: user.fb_token || null,
+            role: user.role || null
         }, security.secret);
     }
 

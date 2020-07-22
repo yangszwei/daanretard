@@ -11,7 +11,7 @@ router.get("/create", async (ctx) => {
     });
 });
 
-router.get("/s/:id", async (ctx) => {
+router.get("/s/:id+", async (ctx) => {
     let submission = await Post.getSubmissionById(ctx.params.id);
     let status = "無貼文資訊";
     if (submission && submission.stage) {
@@ -22,10 +22,21 @@ router.get("/s/:id", async (ctx) => {
         if (submission.stage === "published") status = "已發佈";
     }
     await ctx.render("post-submission-status", {
+        user: ctx.user,
         title: "貼文狀態",
         submission_id: ctx.params.id,
         submission_status: status
     });
+});
+
+router.get("/f/:id+", async (ctx) => {
+    console.log(ctx.url)
+    try {
+        ctx.body = await Post.getImage(ctx.params.id);
+    } catch(err) {
+        console.log(err)
+        ctx.status(404);
+    }
 });
 
 function handleError(err) {

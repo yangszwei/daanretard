@@ -1,4 +1,5 @@
-const Router = require("@koa/router");
+const Router = require("@koa/router"),
+    Post = require("../app/post");
 const router = new Router();
 
 router.get("/", async (ctx) => {
@@ -6,8 +7,8 @@ router.get("/", async (ctx) => {
 });
 
 router.get("/review", async (ctx) => {
-    await ctx.render("review.admin", {
-        posts: await Post.listNotReviewed()
+    await ctx.render("admin-review", {
+        posts: await Post.listNotReviewed(0)
     });
 });
 

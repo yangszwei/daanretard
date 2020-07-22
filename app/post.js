@@ -3,22 +3,23 @@ const Facebook = require("./utils/facebook"),
     database = require("./utils/database"),
     mail = require("./utils/mail"),
     Config = require("./config"),
+    User = require("./user"),
     crypto = require("crypto"),
-    BSON = require("bson");
-const posts = database.collection("posts");
+    Binary = require("mongodb").Binary,
+    type = require("file-type"),
+    fs = require("fs");
+const posts = database.collection("posts"),
+    files = database.collection("files");
 
 function validatePost(post) {
     if (post.content && post.content.length) {
         if (post.content.length > 500) throw "content too long";
     }
-    let images = [];
     if (post.images) {
         for (let image of post.images) {
             if (image.size > 4 * 1024 * 1024) throw "image too large";
-            images.push(BSON.serialize(image));
         }
     }
-    post.images = images;
     return post;
 }
 
@@ -29,14 +30,17 @@ function generateToken() {
 class Post {
 
     static async submit(post, author) {
-        let id = crypto.randomBytes(12).toString("base64");
+        let id = crypto.randomBytes(12).toString("hex");
         post = validatePost(post);
         const cleanPost = {
             id: id,
             stage: "submission",
             content: post.content,
-            images: post.images,
+            images: [],
             submit_time: Date.now()
+        }
+        for (let image of (post.images || [])) {
+            cleanPost.images.push(await this.uploadImage(image));
         }
         if (author) {
             cleanPost.author = author._id;
@@ -56,6 +60,20 @@ class Post {
             }
         }
         return id;
+    }
+
+    static async uploadImage(file) {
+        let id = crypto.randomBytes(12).toString("hex");
+        await files.insertOne({
+            id: id,
+            data: Binary(await fs.readFileSync(file.path))
+        });
+        return id;
+    }
+
+    static async getImage(id) {
+        let doc = await files.findOne({ id: id });
+        return doc.data.buffer;
     }
 
     static async review(id, review) {
@@ -83,8 +101,21 @@ class Post {
         });
     }
 
-    static async listNotReviewed() {
-
+    static async listNotReviewed(page) {
+        let list = await posts.find({
+            stage: "submission",
+            verified: true
+        }, 20, page);
+        for (let i in list) {
+            if (list.hasOwnProperty(i) && list[i].author) {
+                if (!list[i].author) continue;
+                let user = await User.getUserByObjectID(list[i].author);
+                list[i].author = {
+                    name: user.name
+                };
+            }
+        }
+        return list;
     }
 
     static async publish(id) {

@@ -1,0 +1,38 @@
+doctype html
+html
+    head
+        include head
+        link(rel="stylesheet", href="/css/admin-review.css")
+    body
+        main
+            .posts
+                .submissions
+                    each post in posts
+                        .post-card
+                            header
+                                p.meta.post-id
+                                    | #&nbsp;
+                                    a.link(href=`/post/s/${post.id}`, target="_blank") #{post.id}
+                            main
+                                .container.left
+                                    p.meta 貼文資料
+                                    if post.author
+                                        p.text.author 作者：#{post.author.name}
+                                    else
+                                        p.text.author 聯絡方式：#{post.email}
+                                    p.text.submit_time 建立於：#{post.submit_time}
+                                    if post.images.length
+                                        p.text 圖片：
+                                        .post-images
+                                            each id in post.images
+                                                img(src=`/post/f/${id}`)
+                                .post-content
+                                    p.meta 貼文內容
+                                    p.text-large #{post.content}
+                            footer
+                                button.button-icon.reject
+                                    .iconify(data-icon="mdi:close")
+                                button.button-icon.approve
+                                    .iconify(data-icon="mdi:check")
+
+        include admin-page
