@@ -1,0 +1,31 @@
+name: "Codacy"
+
+on: ["push"]
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    name: Go
+    services:
+      mariadb:
+        image: mariadb:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_USER: user
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: test
+          MYSQL_ROOT_PASSWORD: password
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    steps:
+      - name: Install Go
+        if: success()
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.15.x
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Copy .env file
+        run: cp .github/.env .env
+      - name: Test
+        run: go test ./...
