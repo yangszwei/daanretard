@@ -1,4 +1,4 @@
-name: "Codacy"
+name: "Go Test"
 
 on: ["push"]
 
