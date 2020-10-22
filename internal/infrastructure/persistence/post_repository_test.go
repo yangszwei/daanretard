@@ -60,7 +60,7 @@ func TestPostRepository_FindAll(t *testing.T) {
 }
 
 func TestPostRepository_SaveOne(t *testing.T) {
-	err := posts.SaveOne(&entity.Post{ ID: 1000 })
+	err := posts.SaveOne(&testPost)
 	if err != nil {
 		t.Error(err)
 	}
@@ -71,4 +71,10 @@ func TestPostRepository_DeleteOne(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+	t.Run("cleanup", func(t *testing.T) {
+		result := DB.Conn.Select("Submission", "Review").Delete(&testPost)
+		if result.Error != nil {
+			t.Error(result.Error)
+		}
+	})
 }

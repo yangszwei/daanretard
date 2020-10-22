@@ -3,128 +3,96 @@ package persistence
 import (
 	entity "daanretard/internal/domain/user"
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 )
 
 // NewUserRepository create a UserRepository
-func NewUserRepository(db *gorm.DB) *UserRepository {
+func NewUserRepository(db *DB) *UserRepository {
 	u := new(UserRepository)
-	u.DB = db
-	u.ids = make(map[uint32]*entity.User)
-	u.names = make(map[string]*entity.User)
-	u.emails = make(map[string]*entity.User)
+	u.db = db.Conn
 	return u
 }
 
 // UserRepository implement user.IRepository
 type UserRepository struct {
-	DB     *gorm.DB
-	ids    map[uint32]*entity.User
-	names  map[string]*entity.User
-	emails map[string]*entity.User
+	db *gorm.DB
 }
 
-// AutoMigrate setup table
+// AutoMigrate setup table schema
 func (u *UserRepository) AutoMigrate() error {
-	err := u.DB.AutoMigrate(
-		&entity.User{},
-		&entity.Profile{},
+	return u.db.AutoMigrate(
+		entity.User{},
+		entity.Profile{},
+		entity.Session{},
 	)
-	return err
 }
 
 // InsertOne insert a user
 func (u *UserRepository) InsertOne(user *entity.User) error {
-	if _, exist := u.names[user.Name] ; exist {
-		return errors.New("name already exist")
-	}
-	if _, exist := u.emails[user.Email] ; exist {
-		return errors.New("email already exist")
-	}
-	result := u.DB.Create(user)
+	result := u.db.Create(user)
+	return result.Error
+}
+
+// FindOne find a user with user.Query
+func (u *UserRepository) FindOne(query entity.Query) (*entity.User, error) {
+	var user entity.User
+	result := u.db.Where(&entity.User{
+		ID: query.ID,
+		Name: query.Name,
+		Email: query.Email,
+	}).Preload("Profile").Preload("Sessions").First(&user)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
-	u.ids[user.ID] = user
-	u.names[user.Name] = user
-	u.emails[user.Email] = user
-	return nil
+	return &user, nil
 }
 
-// FindOneByID find a user by ID
-func (u *UserRepository) FindOneByID(id uint32) (*entity.User, error) {
-	if _, exist := u.ids[id] ; !exist {
-		result := u.DB.First(&entity.User{}, id)
-		if result.Error != nil {
-			return nil, result.Error
-		}
-		var user entity.User
-		result.Scan(&user)
-		u.ids[id] = &user
-		u.names[user.Name] = &user
-		u.emails[user.Email] = &user
+// FindAll find a user with user.Query
+func (u *UserRepository) FindAll(query entity.Query) ([]*entity.User, error) {
+	var users []*entity.User
+	result := u.db.Where(&entity.User{
+		ID: query.ID,
+		Name: query.Name,
+		Email: query.Email,
+	}).Preload("Profile").Preload("Sessions").Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-	return u.ids[id], nil
+	return users, nil
 }
 
-// FindOneByName find a user by name
-func (u *UserRepository) FindOneByName(name string) (*entity.User, error) {
-	if _, exist := u.names[name] ; !exist {
-		var user entity.User
-		result := u.DB.Where("name = ?", name).First(&user)
-		if result.Error != nil {
-			return nil, result.Error
-		}
-		result.Scan(&user)
-		u.ids[user.ID] = &user
-		u.names[user.Name] = &user
-		u.emails[user.Email] = &user
+// FindOneBySessionID find a user with user.Session.ID
+func (u *UserRepository) FindOneBySessionID(id uint32) (*entity.User, error) {
+	var session entity.Session
+	result := u.db.First(&session, id)
+	if result.Error != nil {
+		return nil, result.Error
 	}
-	return u.names[name], nil
-}
-
-// FindOneByEmail find a user by email
-func (u *UserRepository) FindOneByEmail(email string) (*entity.User, error) {
-	if _, exist := u.emails[email] ; !exist {
-		var user entity.User
-		result := u.DB.Where("email = ?", email).First(&user)
-		if result.Error != nil {
-			return nil, result.Error
-		}
-		result.Scan(&user)
-		u.ids[user.ID] = &user
-		u.names[user.Name] = &user
-		u.emails[user.Email] = &user
+	result.Scan(&session)
+	fmt.Println("session is ", session)
+	if session.UserID == 0 {
+		return nil, errors.New("user id is 0")
 	}
-	return u.emails[email], nil
+	var user entity.User
+	result = u.db.Preload("Profile").Preload("Sessions").First(&user, session.UserID)
+	if result.Error != nil {
+		fmt.Println(3)
+		return nil, result.Error
+	}
+	result.Scan(&user)
+	fmt.Println(4)
+	return &user, nil
 }
 
 // SaveOne save a user
-func (u *UserRepository) SaveOne(id uint32) error {
-	if u.ids[id] == nil {
-		return errors.New("record not found")
-	}
-	result := u.DB.Save(u.ids[id])
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+func (u *UserRepository) SaveOne(user *entity.User) error {
+	result := u.db.Save(user)
+	return result.Error
 }
 
 // DeleteOne delete a user
-func (u *UserRepository) DeleteOne(id uint32) error {
-	user, err := u.FindOneByID(id)
-	if err != nil {
-		return err
-	}
-	result := u.DB.Select("Profile").Delete(user)
-	if result.Error != nil {
-		return result.Error
-	}
-	if u.ids[id] != nil {
-		delete(u.ids, id)
-		delete(u.names, user.Name)
-		delete(u.emails, user.Email)
-	}
-	return nil
+func (u *UserRepository) DeleteOne(user *entity.User) error {
+	result := u.db.Select("Profile", "Sessions").Delete(user)
+	return result.Error
 }

@@ -9,7 +9,8 @@ type User struct {
 	Name       string `gorm:"unique"`
 	Email      string `gorm:"unique;size:254"`
 	Password   []byte
-	Profile    Profile `gorm:"foreignKey:UserID"`
+	Profile    Profile
+	Sessions   []Session
 	IsVerified bool
 	CreatedAt  time.Time
 }

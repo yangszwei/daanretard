@@ -12,6 +12,6 @@ type Services struct {
 
 func prepareServices(db *persistence.DB) (*Services, error) {
 	s := new(Services)
-	s.User = user.NewService(persistence.NewUserRepository(db.Conn))
+	s.User = user.NewService(persistence.NewUserRepository(db))
 	return s, nil
 }

@@ -43,21 +43,12 @@ func (s *Service) Register(props object.UserProps, profile object.UserProfilePro
 
 // Authenticate authenticate user
 func (s *Service) Authenticate(props object.UserProps) error {
-	var ( user *User ; err error )
-	if props.Name != "" {
-		user, err = s.r.FindOneByName(props.Name)
-		if err != nil {
-			return err
-		}
-	}
-	if props.Email != "" {
-		user, err = s.r.FindOneByEmail(props.Email)
-		if err != nil {
-			return err
-		}
-	}
-	if user.ID == 0 {
-		return errors.New("record not found")
+	user, err := s.r.FindOne(Query{
+		Name: props.Name,
+		Email: props.Email,
+	})
+	if err != nil {
+		return err
 	}
 	if security.CompareHashAndPassword(user.Password, props.Password) != nil {
 		return errors.New("wrong password")
@@ -67,5 +58,9 @@ func (s *Service) Authenticate(props object.UserProps) error {
 
 // Delete delete user
 func (s *Service) Delete(id uint32) error {
-	return s.r.DeleteOne(id)
+	user, err := s.r.FindOne(Query{ ID: id })
+	if err != nil {
+		return err
+	}
+	return s.r.DeleteOne(user)
 }

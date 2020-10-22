@@ -16,11 +16,17 @@ var (
 			FirstName: "Test",
 			LastName:  "User",
 		},
+		Sessions: []entity.Session{
+			{},
+		},
 	}
 )
 
-func TestUserRepository_Setup(t *testing.T) {
-	users = persistence.NewUserRepository(DB.Conn)
+func TestNewUserRepository(t *testing.T) {
+	users = persistence.NewUserRepository(DB)
+}
+
+func TestUserRepository_AutoMigrate(t *testing.T) {
 	err := users.AutoMigrate()
 	if err != nil {
 		t.Error(err)
@@ -32,92 +38,42 @@ func TestUserRepository_InsertOne(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Run("used name", func(t *testing.T) {
-		err = users.InsertOne(&entity.User{ Name: testUser.Name })
-		if err == nil || err.Error() != "name already exist" {
-			t.Error(err)
-		}
-	})
-	t.Run("used email", func(t *testing.T) {
-		err = users.InsertOne(&entity.User{ Email: testUser.Email })
-		if err == nil || err.Error() != "email already exist" {
-			t.Error(err)
-		}
-	})
 }
 
-func TestUserRepository_FindOneByID(t *testing.T) {
-	t.Run("Local", func(t *testing.T) {
-		u, err := users.FindOneByID(testUser.ID)
-		if err != nil {
-			t.Error(err)
-		}
-		if u.ID != testUser.ID {
-			t.Error(u)
-		}
-	})
-	t.Run("Database", func(t *testing.T) {
-		u, err := persistence.NewUserRepository(DB.Conn).FindOneByID(testUser.ID)
-		if err != nil {
-			t.Error(err)
-		}
-		if u.ID != testUser.ID {
-			t.Error(u)
-		}
-	})
+func TestUserRepository_FindOne(t *testing.T) {
+	_, err := users.FindOne(entity.Query{ ID: testUser.ID })
+	if err != nil {
+		t.Error(err)
+	}
 }
 
-func TestUserRepository_FindOneByName(t *testing.T) {
-	t.Run("Local", func(t *testing.T) {
-		u, err := users.FindOneByName(testUser.Name)
-		if err != nil {
-			t.Error(err)
-		}
-		if u.ID != testUser.ID {
-			t.Error(u)
-		}
-	})
-	t.Run("Database", func(t *testing.T) {
-		u, err := persistence.NewUserRepository(DB.Conn).FindOneByName(testUser.Name)
-		if err != nil {
-			t.Error(err)
-		}
-		if u.ID != testUser.ID {
-			t.Error(u)
-		}
-	})
+func TestUserRepository_FindAll(t *testing.T) {
+	_, err := users.FindAll(entity.Query{ ID: testUser.ID })
+	if err != nil {
+		t.Error(err)
+	}
 }
 
-func TestUserRepository_FindOneByEmail(t *testing.T) {
-	t.Run("Local", func(t *testing.T) {
-		u, err := users.FindOneByEmail(testUser.Email)
+func TestUserRepository_FindOneBySessionID(t *testing.T) {
+	if len(testUser.Sessions) >= 1 {
+		_, err := users.FindOneBySessionID(testUser.Sessions[0].ID)
 		if err != nil {
 			t.Error(err)
 		}
-		if u.ID != testUser.ID {
-			t.Error(u)
-		}
-	})
-	t.Run("Database", func(t *testing.T) {
-		u, err := persistence.NewUserRepository(DB.Conn).FindOneByEmail(testUser.Email)
-		if err != nil {
-			t.Error(err)
-		}
-		if u.ID != testUser.ID {
-			t.Error(u)
-		}
-	})
+	} else {
+		t.Error("sessions empty")
+	}
 }
 
 func TestUserRepository_SaveOne(t *testing.T) {
-	err := users.SaveOne(testUser.ID)
+	err := users.SaveOne(&testUser)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestUserRepository_DeleteOne(t *testing.T) {
-	err := users.DeleteOne(testUser.ID)
+	err := users.DeleteOne(&testUser)
 	if err != nil {
 		t.Error(err)
 	}

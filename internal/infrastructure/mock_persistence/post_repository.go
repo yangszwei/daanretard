@@ -58,13 +58,16 @@ func (p *PostRepository) FindAll(query entity.Query) ([]*entity.Post, error) {
 		if query.ID != 0 && query.ID == post.ID {
 			return []*entity.Post{ post }, nil
 		}
-		if query.Status == 0 || query.Status != post.Status {
+		if query.Status != 0 && query.Status != post.Status {
 			continue
 		}
-		if query.SubmitterID == 0 || query.SubmitterID != post.Submission.SubmitterID {
+		if query.SubmitterID != 0 && query.SubmitterID != post.Submission.SubmitterID {
 			continue
 		}
-		if query.ReviewerID == 0 || query.ReviewerID != post.Review.ReviewerID {
+		if query.ReviewerID != 0 && query.ReviewerID != post.Review.ReviewerID {
+			continue
+		}
+		if query.Status == 0 && query.SubmitterID == 0 && query.ReviewerID == 0 {
 			continue
 		}
 		posts = append(posts, post)
