@@ -16,7 +16,7 @@ func NewUserRepository() *UserRepository {
 
 // UserRepository implement user.IRepository
 type UserRepository struct {
-	counter uint32
+	count uint32
 	ids    map[uint32]*entity.User
 	names  map[string]*entity.User
 	emails map[string]*entity.User
@@ -30,8 +30,8 @@ func (u *UserRepository) InsertOne(user *entity.User) error {
 	if _, exist := u.emails[user.Email] ; exist {
 		return errors.New("email already exist")
 	}
-	u.counter += 1
-	user.ID = u.counter
+	u.count += 1
+	user.ID = u.count
 	u.ids[user.ID] = user
 	u.names[user.Name] = user
 	u.emails[user.Email] = user

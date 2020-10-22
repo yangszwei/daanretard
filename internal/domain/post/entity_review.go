@@ -7,3 +7,8 @@ type Review struct {
 	Result     uint8  `gorm:"index"`
 	Message    string `gorm:"size:200"`
 }
+
+// TableName set table name
+func (r *Review) TableName() string {
+	return "post_reviews"
+}
