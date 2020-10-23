@@ -16,6 +16,6 @@ func PrepareDelivery(s *application.Services)(*delivery.Engine, error) {
 	e.SetResourceRoot("./ui")
 	//delivery.SetupUser(e)
 	delivery.SetupAPI(e)
-	//delivery.SetupUserAPI(e, s)
+	delivery.SetupUserAPI(e, s)
 	return e, nil
 }

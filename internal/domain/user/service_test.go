@@ -34,9 +34,12 @@ func TestService_Register(t *testing.T) {
 }
 
 func TestService_Authenticate(t *testing.T) {
-	err := s.Authenticate(props)
+	i, err := s.Authenticate(props)
 	if err != nil {
 		t.Error(err)
+	}
+	if i != id {
+		t.Error(i, id)
 	}
 }
 

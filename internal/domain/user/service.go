@@ -42,18 +42,18 @@ func (s *Service) Register(props object.UserProps, profile object.UserProfilePro
 }
 
 // Authenticate authenticate user
-func (s *Service) Authenticate(props object.UserProps) error {
+func (s *Service) Authenticate(props object.UserProps) (uint32, error) {
 	user, err := s.r.FindOne(Query{
 		Name: props.Name,
 		Email: props.Email,
 	})
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if security.CompareHashAndPassword(user.Password, props.Password) != nil {
-		return errors.New("wrong password")
+		return 0, errors.New("wrong password")
 	}
-	return nil
+	return user.ID, nil
 }
 
 // Delete delete user
