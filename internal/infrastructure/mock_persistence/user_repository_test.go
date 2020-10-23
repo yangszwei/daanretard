@@ -16,9 +16,6 @@ var (
 			FirstName: "Test",
 			LastName:  "User",
 		},
-		Sessions: []entity.Session{
-			{},
-		},
 	}
 )
 
@@ -64,17 +61,6 @@ func TestUserRepository_FindAll(t *testing.T) {
 	_, err := users.FindAll(entity.Query{ ID: testUser.ID })
 	if err != nil {
 		t.Error(err)
-	}
-}
-
-func TestUserRepository_FindOneBySessionID(t *testing.T) {
-	if len(testUser.Sessions) >= 1 {
-		_, err := users.FindOneBySessionID(testUser.Sessions[0].ID)
-		if err != nil {
-			t.Error(err)
-		}
-	} else {
-		t.Error("sessions empty")
 	}
 }
 

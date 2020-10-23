@@ -10,7 +10,6 @@ type User struct {
 	Email      string `gorm:"unique;size:254"`
 	Password   []byte
 	Profile    Profile
-	Sessions   []Session
 	IsVerified bool
 	CreatedAt  time.Time
 }
