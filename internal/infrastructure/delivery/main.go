@@ -10,9 +10,6 @@ import (
 func NewEngine() *Engine {
 	e := new(Engine)
 	e.engine = gin.Default()
-	e.root = e.engine.Group("/")
-	e.views = e.root
-	e.api = e.root.Group("/api")
 	return e
 }
 
@@ -22,6 +19,13 @@ type Engine struct {
 	root *gin.RouterGroup
 	views *gin.RouterGroup
 	api *gin.RouterGroup
+}
+
+// ApplyMiddlewares setup router groups, should be called after using middlewares
+func (e *Engine) ApplyMiddlewares() {
+	e.root = e.engine.Group("/")
+	e.views = e.root
+	e.api = e.root.Group("/api")
 }
 
 // SetResourceRoot load html templates & add route for static assets

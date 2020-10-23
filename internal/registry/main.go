@@ -13,7 +13,7 @@ func Prepare() *Application {
 	if err != nil {
 		panic(err)
 	}
-	services, err := prepareServices(db)
+	services, err := SetupService(db)
 	if err != nil {
 		panic(err)
 	}
