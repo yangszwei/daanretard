@@ -5,7 +5,7 @@ const CSS_SOURCE = 'src/css/*.pcss'
 const CSS_DIST = 'public/css'
 const JS_SOURCE = 'src/js/*.js'
 const JS_DIST = 'public/js'
-const TMPL_SOURCE = 'templates/*.html'
+const TMPL_SOURCE = 'templates/**/*.html'
 
 function buildCSS () {
   const sourcemaps = require('gulp-sourcemaps')
