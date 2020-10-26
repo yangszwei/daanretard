@@ -3,7 +3,7 @@ const del = require('del')
 
 const CSS_SOURCE = 'src/css/*.pcss'
 const CSS_DIST = 'public/css'
-const JS_SOURCE = 'src/js/*.js'
+const JS_SOURCE = 'src/js/**/*.js'
 const JS_DIST = 'public/js'
 const TMPL_SOURCE = 'templates/**/*.html'
 
@@ -25,7 +25,6 @@ function buildCSS () {
 
 function buildJS (done) {
   return src(JS_SOURCE)
-    .pipe(require('vinyl-named')())
     .pipe(require('webpack-stream')(
       require('./webpack.config')
     ))

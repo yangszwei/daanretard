@@ -3,6 +3,7 @@ package delivery
 import (
 	"daanretard/internal/infrastructure/application"
 	"daanretard/internal/object"
+	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,6 +12,13 @@ import (
 func apiUserRegister(services *application.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
+		fmt.Println(
+			c.PostForm("name"),
+			c.PostForm("email"),
+			c.PostForm("password"),
+			c.PostForm("first_name"),
+			c.PostForm("last_name"),
+			)
 		userID, err := services.User.Register(
 			object.UserProps{
 				Name: c.PostForm("name"),
@@ -23,7 +31,7 @@ func apiUserRegister(services *application.Services) gin.HandlerFunc {
 			},
 		)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{})
+			c.Status(http.StatusBadRequest)
 			return
 		}
 		session.Set("user", userID)
@@ -31,7 +39,7 @@ func apiUserRegister(services *application.Services) gin.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		c.AbortWithStatus(http.StatusOK)
+		c.Status(http.StatusOK)
 	}
 }
 
@@ -44,7 +52,7 @@ func apiUserLogin(s *application.Services) gin.HandlerFunc {
 			Password: c.PostForm("password"),
 		})
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{})
+			c.Status(http.StatusBadRequest)
 			return
 		}
 		session.Set("user", id)
@@ -52,7 +60,7 @@ func apiUserLogin(s *application.Services) gin.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		c.AbortWithStatus(http.StatusOK)
+		c.Status(http.StatusOK)
 	}
 }
 
@@ -64,7 +72,7 @@ func apiUserLogout() gin.HandlerFunc {
 		if err != nil {
 			panic(err)
 		}
-		c.AbortWithStatus(http.StatusOK)
+		c.Status(http.StatusOK)
 	}
 }
 

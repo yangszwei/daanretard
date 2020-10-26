@@ -20,7 +20,6 @@
     "gulp-sourcemaps": "^2.6.5",
     "standard": "^14.3.4",
     "tailwindcss": "^1.9.5",
-    "vinyl-named": "^1.1.0",
     "webpack-stream": "^6.1.0"
   }
 }

@@ -1,5 +1,9 @@
 module.exports = {
   devtool: 'source-map',
+  entry: {
+    'user/login': './src/js/user/login.js',
+    'user/register': './src/js/user/register.js'
+  },
   output: {
     filename: '[name].js'
   },
