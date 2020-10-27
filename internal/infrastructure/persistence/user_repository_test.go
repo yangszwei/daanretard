@@ -1,65 +1,85 @@
 package persistence_test
 
 import (
-	entity "daanretard/internal/domain/user"
+	"daanretard/internal/domain/user"
 	"daanretard/internal/infrastructure/persistence"
 	"testing"
 )
 
-var (
-	users *persistence.UserRepository
-	testUser = entity.User{
-		Name:     "user_repo",
-		Email:    "user_repo@example.com",
-		Password: []byte("12345678"),
-		Profile: entity.Profile{
-			FirstName: "Test",
-			LastName:  "User",
-		},
-	}
-)
+var testUser = user.User{
+	Email:      "persistence.user@example.com",
+	Password:   []byte("test password"),
+	Profile:    user.Profile{
+		DisplayName: "persistence_user",
+		FirstName:   "Persistence",
+		LastName:    "User",
+	},
+}
 
-func TestNewUserRepository(t *testing.T) {
-	users = persistence.NewUserRepository(DB)
+// NewUserRepository return a UserRepository for testing
+func NewUserRepository() *persistence.UserRepository {
+	return persistence.NewUserRepository(DB)
 }
 
 func TestUserRepository_AutoMigrate(t *testing.T) {
-	err := users.AutoMigrate()
+	err := NewUserRepository().AutoMigrate()
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestUserRepository_InsertOne(t *testing.T) {
-	err := users.InsertOne(&testUser)
+	err := NewUserRepository().InsertOne(&testUser)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-func TestUserRepository_FindOne(t *testing.T) {
-	_, err := users.FindOne(entity.Query{ ID: testUser.ID })
-	if err != nil {
-		t.Error(err)
-	}
+func TestUserRepository_FindOneByID(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		u, err := NewUserRepository().FindOneByID(testUser.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if u.ID != testUser.ID {
+			t.Error(u)
+		}
+	})
+	t.Run("should fail with: record not found", func(t *testing.T) {
+		_, err := NewUserRepository().FindOneByID(0)
+		if err == nil || err.Error() != "record not found" {
+			t.Error(err)
+		}
+	})
 }
 
-func TestUserRepository_FindAll(t *testing.T) {
-	_, err := users.FindAll(entity.Query{ ID: testUser.ID })
-	if err != nil {
-		t.Error(err)
-	}
+func TestUserRepository_FindOneByEmail(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		u, err := NewUserRepository().FindOneByEmail(testUser.Email)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if u.ID != testUser.ID {
+			t.Error(u)
+		}
+	})
+	t.Run("should fail with: record not found", func(t *testing.T) {
+		_, err := NewUserRepository().FindOneByEmail("")
+		if err == nil || err.Error() != "record not found" {
+			t.Error(err)
+		}
+	})
 }
 
-func TestUserRepository_SaveOne(t *testing.T) {
-	err := users.SaveOne(&testUser)
+func TestUserRepository_UpdateOne(t *testing.T) {
+	err := NewUserRepository().UpdateOne(&testUser)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestUserRepository_DeleteOne(t *testing.T) {
-	err := users.DeleteOne(&testUser)
+	err := NewUserRepository().DeleteOne(&testUser)
 	if err != nil {
 		t.Error(err)
 	}

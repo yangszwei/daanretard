@@ -1,7 +1,7 @@
 package persistence
 
 import (
-	entity "daanretard/internal/domain/user"
+	"daanretard/internal/domain/user"
 	"gorm.io/gorm"
 )
 
@@ -17,56 +17,45 @@ type UserRepository struct {
 	db *gorm.DB
 }
 
-// AutoMigrate setup table schema
+// AutoMigrate set table schema
 func (u *UserRepository) AutoMigrate() error {
-	return u.db.AutoMigrate(
-		entity.User{},
-		entity.Profile{},
-	)
+	return u.db.AutoMigrate(&user.User{}, &user.Profile{})
 }
 
 // InsertOne insert a user
-func (u *UserRepository) InsertOne(user *entity.User) error {
+func (u *UserRepository) InsertOne(user *user.User) error {
 	result := u.db.Create(user)
 	return result.Error
 }
 
-// FindOne find a user with user.Query
-func (u *UserRepository) FindOne(query entity.Query) (*entity.User, error) {
-	var user entity.User
-	result := u.db.Where(&entity.User{
-		ID: query.ID,
-		Name: query.Name,
-		Email: query.Email,
-	}).Preload("Profile").First(&user)
+// FindOneByID find a user by its ID
+func (u *UserRepository) FindOneByID(id uint32) (*user.User, error) {
+	var record user.User
+	result := u.db.Preload("Profile").First(&record, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return &user, nil
+	return &record, nil
 }
 
-// FindAll find a user with user.Query
-func (u *UserRepository) FindAll(query entity.Query) ([]*entity.User, error) {
-	var users []*entity.User
-	result := u.db.Where(&entity.User{
-		ID: query.ID,
-		Name: query.Name,
-		Email: query.Email,
-	}).Preload("Profile").Find(&users)
+// FindOneByEmail find a user by its email
+func (u *UserRepository) FindOneByEmail(email string) (*user.User, error) {
+	var record user.User
+	result := u.db.Where("email = ?", email).First(&record)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return users, nil
+	return &record, nil
 }
 
-// SaveOne save a user
-func (u *UserRepository) SaveOne(user *entity.User) error {
+// UpdateOne save a user
+func (u *UserRepository) UpdateOne(user *user.User) error {
 	result := u.db.Save(user)
 	return result.Error
 }
 
 // DeleteOne delete a user
-func (u *UserRepository) DeleteOne(user *entity.User) error {
+func (u *UserRepository) DeleteOne(user *user.User) error {
 	result := u.db.Select("Profile").Delete(user)
 	return result.Error
 }

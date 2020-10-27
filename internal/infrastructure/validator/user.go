@@ -15,7 +15,7 @@ var (
 func User(props object.UserProps) error {
 	errs := userValidator.Struct(props)
 	if errs != nil {
-		return errors.New("invalid")
+		return errors.New("invalid credentials")
 	}
 	return nil
 }
@@ -24,7 +24,7 @@ func User(props object.UserProps) error {
 func UserProfile(props object.UserProfileProps) error {
 	errs := userProfileValidator.Struct(props)
 	if errs != nil {
-		return errors.New("invalid")
+		return errors.New("invalid credentials")
 	}
 	return nil
 }

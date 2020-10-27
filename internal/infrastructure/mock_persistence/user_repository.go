@@ -1,7 +1,7 @@
 package mock_persistence
 
 import (
-	entity "daanretard/internal/domain/user"
+	"daanretard/internal/domain/user"
 	"errors"
 )
 
@@ -9,82 +9,60 @@ import (
 func NewUserRepository() *UserRepository {
 	u := new(UserRepository)
 	u.count = 0
-	u.ids = make(map[uint32]*entity.User)
+	u.ids = make(map[uint32]*user.User)
+	u.emails = make(map[string]*user.User)
 	return u
 }
 
 // UserRepository implement user.IRepository
 type UserRepository struct {
 	count uint32
-	ids map[uint32]*entity.User
+	ids map[uint32]*user.User
+	emails map[string]*user.User
 }
 
 // InsertOne insert a user
-func (u *UserRepository) InsertOne(user *entity.User) error {
-	if _, exist := u.ids[user.ID] ; exist {
-		return errors.New("duplicate entry")
+func (u *UserRepository) InsertOne(user *user.User) error {
+	_, idUsed := u.ids[user.ID]
+	_, emailUsed := u.emails[user.Email]
+	if idUsed || emailUsed {
+		return errors.New("error 1062")
 	}
-	u.count += 1
-	user.ID = u.count
+	if user.ID == 0 {
+		u.count++
+		user.ID = u.count
+	}
 	u.ids[user.ID] = user
+	u.emails[user.Email] = user
 	return nil
 }
 
-// FindOne find a user with user.Query
-func (u *UserRepository) FindOne(query entity.Query) (*entity.User, error) {
-	for _, user := range u.ids {
-		if query.ID != 0 && query.ID == user.ID {
-			return user, nil
-		}
-		if query.Name == "" || query.Name != user.Name {
-			continue
-		}
-		if query.Email == "" || query.Email != user.Email {
-			continue
-		}
-		return user, nil
-	}
-	return nil, errors.New("record not found")
-}
-
-// FindAll find a user with user.Query
-func (u *UserRepository) FindAll(query entity.Query) ([]*entity.User, error) {
-	var users []*entity.User
-	for _, user := range u.ids {
-		if query.ID != 0 && query.ID == user.ID {
-			return []*entity.User{ user }, nil
-		}
-		if query.Name != "" && query.Name != user.Name {
-			continue
-		}
-		if query.Email != "" && query.Email != user.Email {
-			continue
-		}
-		if query.Name == "" && query.Email == "" {
-			continue
-		}
-		users = append(users, user)
-	}
-	if len(users) == 0 {
+// FindOneByID find a user by its ID
+func (u *UserRepository) FindOneByID(id uint32) (*user.User, error) {
+	if _, exist := u.ids[id] ; !exist {
 		return nil, errors.New("record not found")
 	}
-	return users, nil
+	return u.ids[id], nil
 }
 
-// SaveOne save a user
-func (u *UserRepository) SaveOne(user *entity.User) error {
-	if _, exist := u.ids[user.ID] ; !exist {
-		return u.InsertOne(user)
+// FindOneByEmail find a user by its email
+func (u *UserRepository) FindOneByEmail(email string) (*user.User, error) {
+	if _, exist := u.emails[email] ; !exist {
+		return nil, errors.New("record not found")
 	}
+	return u.emails[email], nil
+}
+
+// UpdateOne save a user
+func (u *UserRepository) UpdateOne(user *user.User) error {
 	u.ids[user.ID] = user
+	u.emails[user.Email] = user
 	return nil
 }
 
 // DeleteOne delete a user
-func (u *UserRepository) DeleteOne(user *entity.User) error {
-	if _, exist := u.ids[user.ID] ; !exist {
-		return errors.New("record not found")
-	}
+func (u *UserRepository) DeleteOne(user *user.User) error {
 	delete(u.ids, user.ID)
+	delete(u.emails, user.Email)
 	return nil
 }

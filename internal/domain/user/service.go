@@ -7,11 +7,56 @@ import (
 	"errors"
 )
 
-// NewService create a UserService
+// NewService create a Service
 func NewService(r IRepository) *Service {
-	u := new(Service)
-	u.r = r
-	return u
+	s := new(Service)
+	s.r = r
+	return s
+}
+
+// containsRequired checks whether all required fields are present
+func containsRequired(props object.UserProps) bool {
+	var invalid bool
+	invalid = invalid || props.Email == ""
+	invalid = invalid || props.Password == ""
+	invalid = invalid || props.Profile.DisplayName == ""
+	invalid = invalid || props.Profile.FirstName == ""
+	invalid = invalid || props.Profile.LastName == ""
+	return !invalid
+}
+
+// toUser convert object.UserProps to User
+func toUser(props object.UserProps) (*User, error) {
+	u := New()
+	u.ID = props.ID
+	u.Email = props.Email
+	password, err := security.GenerateFromPassword(props.Password)
+	if err != nil {
+		return nil, err
+	}
+	u.Password = password
+	u.Profile.DisplayName = props.Profile.DisplayName
+	u.Profile.FirstName = props.Profile.FirstName
+	u.Profile.LastName = props.Profile.LastName
+	u.IsVerified = props.IsVerified
+	u.CreatedAt = props.CreatedAt
+	return u, nil
+}
+
+// toObject convert User to object.UserProps
+func toObject(user *User) object.UserProps {
+	p := object.UserProps{}
+	p.ID = user.ID
+	p.Email = user.Email
+	if len(user.Password) > 0 {
+		p.Password = "hashed string"
+	}
+	p.Profile.DisplayName = user.Profile.DisplayName
+	p.Profile.FirstName = user.Profile.FirstName
+	p.Profile.LastName = user.Profile.LastName
+	p.IsVerified = user.IsVerified
+	p.CreatedAt = user.CreatedAt
+	return p
 }
 
 // Service implement IUsecase
@@ -19,48 +64,137 @@ type Service struct {
 	r IRepository
 }
 
-// Register register user
-func (s *Service) Register(props object.UserProps, profile object.UserProfileProps) (uint32, error) {
-	user := New()
+// Register validate & save a new user
+func (s *Service) Register(props object.UserProps) (uint32, error) {
+	if !containsRequired(props) {
+		return 0, errors.New("invalid credentials")
+	}
 	if err := validator.User(props) ; err != nil {
 		return 0, err
 	}
-	if err := validator.UserProfile(profile) ; err != nil {
-		return 0, err
+	user, err := toUser(props)
+	if err != nil { panic(err) }
+	if _, err := s.r.FindOneByEmail(props.Email) ; err != nil {
+		err = s.r.InsertOne(user)
+		return user.ID, err
 	}
-	password, _ := security.GenerateFromPassword(props.Password)
-	user.Name = props.Name
-	user.Email = props.Email
-	user.Password = password
-	user.Profile.FirstName = profile.FirstName
-	user.Profile.LastName = profile.LastName
-	err := s.r.InsertOne(user)
-	if err != nil {
-		return 0, err
-	}
-	return user.ID, nil
+	return 0, errors.New("email already taken")
 }
 
-// Authenticate authenticate user
-func (s *Service) Authenticate(props object.UserProps) (uint32, error) {
-	user, err := s.r.FindOne(Query{
-		Name: props.Name,
-		Email: props.Email,
-	})
+// GetProps get user properties
+func (s *Service) GetProps(id uint32) (object.UserProps, error) {
+	u, err := s.r.FindOneByID(id)
+	props := toObject(u)
+	return props, err
+}
+
+// Authenticate authenticate user by email & password
+func (s *Service) Authenticate(email, password string) (uint32, error) {
+	u, err := s.r.FindOneByEmail(email)
 	if err != nil {
+		if err.Error() == "record not found" {
+			return 0, errors.New("invalid credentials")
+		}
 		return 0, err
 	}
-	if security.CompareHashAndPassword(user.Password, props.Password) != nil {
-		return 0, errors.New("wrong password")
+	if security.CompareHashAndPassword(u.Password, password) != nil {
+		return 0, errors.New("invalid credentials")
 	}
-	return user.ID, nil
+	return u.ID, nil
+}
+
+// AuthenticateWithID authenticate user by email & password
+func (s *Service) AuthenticateWithID(id uint32, password string) error {
+	u, err := s.r.FindOneByID(id)
+	if err != nil {
+		if err.Error() == "record not found" {
+			return errors.New("invalid credentials")
+		}
+		return err
+	}
+	if security.CompareHashAndPassword(u.Password, password) != nil {
+		return errors.New("invalid credentials")
+	}
+	return nil
+}
+
+// UpdateEmail set user email and mark user as not verified
+func (s *Service) UpdateEmail(id uint32, email string) error {
+	u, err := s.r.FindOneByID(id)
+	if err != nil {
+		return err
+	}
+	changes := object.UserProps{ Email: email }
+	if err := validator.User(changes) ; err != nil {
+		return err
+	}
+	u.Email = email
+	u.IsVerified = false
+	err = s.r.UpdateOne(u)
+	return err
+}
+
+// Update password set user password
+func (s *Service) UpdatePassword(id uint32, password string) error {
+	u, err := s.r.FindOneByID(id)
+	if err != nil {
+		return err
+	}
+	changes := object.UserProps{ Password: password }
+	if err := validator.User(changes) ; err != nil {
+		return err
+	}
+	u.Password, err = security.GenerateFromPassword(password)
+	if err != nil {
+		return err
+	}
+	err = s.r.UpdateOne(u)
+	return err
+}
+
+// MarkAsVerified mark user as verified
+func (s *Service) MarkAsVerified(id uint32) error {
+	u, err := s.r.FindOneByID(id)
+	if err != nil {
+		return err
+	}
+	u.IsVerified = true
+	err = s.r.UpdateOne(u)
+	return err
+}
+
+// Update profile validate and set user profile
+func (s *Service) UpdateProfile(id uint32, profile object.UserProfileProps) error {
+	u, err := s.r.FindOneByID(id)
+	if err != nil {
+		return err
+	}
+	if err := validator.UserProfile(profile) ; err != nil {
+		return err
+	}
+	user, err := toUser(object.UserProps{ Profile: profile })
+	if err != nil {
+		return err
+	}
+	if user.Profile.DisplayName != "" {
+		u.Profile.DisplayName = user.Profile.DisplayName
+	}
+	if user.Profile.FirstName != "" {
+		u.Profile.FirstName = user.Profile.FirstName
+	}
+	if user.Profile.LastName != "" {
+		u.Profile.LastName = user.Profile.LastName
+	}
+	err = s.r.UpdateOne(u)
+	return err
 }
 
 // Delete delete user
 func (s *Service) Delete(id uint32) error {
-	user, err := s.r.FindOne(Query{ ID: id })
+	u, err := s.r.FindOneByID(id)
 	if err != nil {
 		return err
 	}
-	return s.r.DeleteOne(user)
+	err = s.r.DeleteOne(u)
+	return err
 }

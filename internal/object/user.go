@@ -1,14 +1,13 @@
 package object
 
-// UserProps User props. used to generate user.User
-type UserProps struct {
-	Name     string `validate:"required,max=50"`
-	Email    string `validate:"required,max=254"`
-	Password string `validate:"required,min=8,max=30"`
-}
+import "time"
 
-// UserProfileProps used to generate user.Profile
-type UserProfileProps struct {
-	FirstName string `validate:"required,max=50"`
-	LastName  string `validate:"required,max=50"`
+// UserProps data object of user.User
+type UserProps struct {
+	ID         uint32
+	Email      string `validate:"omitempty,email,max=254"`
+	Password   string `validate:"omitempty,min=8,max=254"`
+	Profile    UserProfileProps
+	IsVerified bool
+	CreatedAt  time.Time
 }
