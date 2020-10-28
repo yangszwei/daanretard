@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import '../component/topnav'
+import '../page/topnav'
 
 const form = document.getElementById('login-form')
 const submit = document.getElementById('submit')

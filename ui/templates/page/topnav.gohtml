@@ -1,4 +1,4 @@
-{{ define "component/topnav" }}
+{{ define "page/topnav" }}
 <nav id="topnav" class="w-full px-4 shadow fixed top-0 bg-white md:flex z-50">
     <div class="h-16 flex items-center justify-between md:flex-grow">
         <a href="/" class="inline-flex items-center">
@@ -17,9 +17,15 @@
         <li class="my-1 md:inline-flex md:items-center">
             <a href="#" class="text-lg md:text-base px-4 py-3 md:py-2 block rounded-md hover:text-black hover:bg-gray-200">聯絡我們</a>
         </li>
-        <li class="my-1 md:inline-flex md:items-center">
-            <a href="/user/login" class="text-lg md:text-base px-4 py-3 md:py-2 block rounded-md hover:text-black hover:bg-gray-200">登入</a>
-        </li>
+        {{ if .user }}
+            <li class="my-1 md:inline-flex md:items-center">
+                <a href="/user/home" class="text-lg md:text-base px-4 py-3 md:py-2 block rounded-md hover:text-black hover:bg-gray-200">我的帳戶</a>
+            </li>
+        {{ else }}
+            <li class="my-1 md:inline-flex md:items-center">
+                <a href="/user/login" class="text-lg md:text-base px-4 py-3 md:py-2 block rounded-md hover:text-black hover:bg-gray-200">登入</a>
+            </li>
+        {{ end }}
     </ul>
     <ul class="hidden flex pb-2 md:pb-0 md:flex justify-center">
         <li class="my-1 md:my-0 mx-4 md:mx-1 md:inline-flex md:items-center">

@@ -12,39 +12,39 @@
     <script defer src="/public/js/user/login.js"></script>
 </head>
 <body class="font-noto pt-16 h-full box-border">
-{{ template "component/topnav" }}
-<main class="min-h-full flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full">
-        <h2 class="py-4 text-center text-3xl leading-9 font-extrabold text-gray-900">登入至您的帳戶</h2>
-        <form id="login-form" class="my-6">
-            <div class="rounded-md shadow-sm">
-                <label>
-                    <input id="email" name="email" type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:border-gray-500 focus:z-10 sm:text-sm sm:leading-5" placeholder="電子郵件">
-                </label>
-                <label class="-mt-px">
-                    <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:border-gray-500 focus:z-10 sm:text-sm sm:leading-5" placeholder="密碼">
-                </label>
-            </div>
-            <div class="my-4 flex justify-end">
-                <a href="/user/forgot" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">忘記密碼?</a>
-            </div>
+    {{ template "page/topnav" . }}
+    <main class="min-h-full flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full">
+            <h2 class="py-4 text-center text-3xl leading-9 font-extrabold text-gray-900">登入至您的帳戶</h2>
+            <form id="login-form" class="my-6">
+                <div class="rounded-md shadow-sm">
+                    <label>
+                        <input id="email" name="email" type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:border-gray-500 focus:z-10 sm:text-sm sm:leading-5" placeholder="電子郵件">
+                    </label>
+                    <label class="-mt-px">
+                        <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:border-gray-500 focus:z-10 sm:text-sm sm:leading-5" placeholder="密碼">
+                    </label>
+                </div>
+                <div class="my-4 flex justify-end">
+                    <a href="/user/forgot" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">忘記密碼?</a>
+                </div>
+                <div class="mt-6">
+                    <button id="submit" type="submit" class="my-2 group relative w-full flex justify-center py-3 md:py-2 px-4 border border-transparent text-md md:text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
+                        登入
+                    </button>
+                </div>
+            </form>
+            <p class="text-center">
+                <span>沒有帳戶?</span>
+                <a href="/user/register" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">建立帳戶</a>
+            </p>
             <div class="mt-6">
-                <button id="submit" type="submit" class="my-2 group relative w-full flex justify-center py-3 md:py-2 px-4 border border-transparent text-md md:text-sm leading-5 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
-                    登入
+                <button type="submit" class="my-2 group relative w-full flex justify-center py-3 md:py-2 px-4 border border-transparent text-md md:text-sm leading-5 font-medium rounded-md text-white bg-facebook focus:outline-none focus:shadow-outline-indigo transition duration-150 ease-in-out">
+                    以 Facebook 繼續
                 </button>
             </div>
-        </form>
-        <p class="text-center">
-            <span>沒有帳戶?</span>
-            <a href="/user/register" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">建立帳戶</a>
-        </p>
-        <div class="mt-6">
-            <button type="submit" class="my-2 group relative w-full flex justify-center py-3 md:py-2 px-4 border border-transparent text-md md:text-sm leading-5 font-medium rounded-md text-white bg-facebook focus:outline-none focus:shadow-outline-indigo transition duration-150 ease-in-out">
-                以 Facebook 繼續
-            </button>
         </div>
-    </div>
-</main>
+    </main>
 </body>
 </html>
 {{ end }}
