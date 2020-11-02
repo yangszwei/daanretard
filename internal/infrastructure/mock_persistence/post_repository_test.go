@@ -1,35 +1,30 @@
 package mock_persistence_test
 
 import (
-	entity "daanretard/internal/domain/post"
+	"daanretard/internal/domain/post"
 	"daanretard/internal/infrastructure/mock_persistence"
+	"daanretard/internal/object"
 	"net"
 	"testing"
+	"time"
 )
 
 var (
-	posts *mock_persistence.PostRepository
-	testPost = entity.Post{
-		Status: entity.Submitted,
-		Submission: entity.Submission{
-			SubmitterID: 1,
-			Message:     "test message",
-			Attachments: "a,b,c",
-			IPAddr:      net.ParseIP("127.0.0.1"),
-			UserAgent:   "test user agent",
+	posts = mock_persistence.NewPostRepository()
+	testPost = post.Post{
+		Status:      post.StatusPublished,
+		UserID:      1,
+		IPAddr:      net.ParseIP("::"),
+		UserAgent:   "post_repository test",
+		Message:     "test message",
+		Attachments: "test_attachment_1,test_attachment_2",
+		Review:      post.Review{
+			UserID: 10,
+			Result: 10,
 		},
-		Review: entity.Review{
-			ReviewerID: 2,
-			Result:     1,
-			Message:    "test message",
-		},
+		FacebookID:  "12345",
 	}
 )
-
-
-func TestNewPostRepository(t *testing.T) {
-	posts = mock_persistence.NewPostRepository()
-}
 
 func TestPostRepository_InsertOne(t *testing.T) {
 	err := posts.InsertOne(&testPost)
@@ -38,64 +33,47 @@ func TestPostRepository_InsertOne(t *testing.T) {
 	}
 }
 
-func TestPostRepository_FindOne(t *testing.T) {
-	t.Run("find by ID", func(t *testing.T) {
-		_, err := posts.FindOne(entity.Query{ ID: testPost.ID })
+func TestPostRepository_FindOneByID(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		_, err := posts.FindOneByID(testPost.ID)
 		if err != nil {
 			t.Error(err)
 		}
 	})
-	t.Run("find by other fields", func(t *testing.T) {
-		post, err := posts.FindOne(entity.Query{
-			Status: testPost.Status,
-			SubmitterID: testPost.Submission.SubmitterID,
-			ReviewerID: testPost.Review.ReviewerID,
-		})
-		if err != nil {
-			t.Error(err)
-		}
-		if post.ID != testPost.ID {
-			t.Error(post)
-		}
-	})
-	t.Run("not found", func(t *testing.T) {
-		_, err := posts.FindOne(entity.Query{})
+	t.Run("should fail with: record not found", func(t *testing.T) {
+		_, err := posts.FindOneByID(0)
 		if err == nil || err.Error() != "record not found" {
 			t.Error(err)
 		}
 	})
 }
 
-func TestPostRepository_FindAll(t *testing.T) {
-	t.Run("find by ID", func(t *testing.T) {
-		_, err := posts.FindAll(entity.Query{ ID: testPost.ID })
-		if err != nil {
-			t.Error(err)
-		}
-	})
-	t.Run("find by other fields", func(t *testing.T) {
-		posts, err := posts.FindAll(entity.Query{
-			Status: testPost.Status,
-			SubmitterID: testPost.Submission.SubmitterID,
-			ReviewerID: testPost.Review.ReviewerID,
+func TestPostRepository_FindMany(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		_, err := posts.FindMany(object.PostQuery{
+			Status:        testPost.Status,
+			UserID:        testPost.UserID,
+			IPAddr:        testPost.IPAddr,
+			CreatedBefore: time.Now(),
+			ReviewerID:    testPost.Review.UserID,
+			ReviewResult:  testPost.Review.Result,
+			Limit:         1,
+			Offset:        0,
 		})
 		if err != nil {
 			t.Error(err)
 		}
-		if posts[0].ID != testPost.ID {
-			t.Error(posts)
-		}
 	})
-	t.Run("not found", func(t *testing.T) {
-		_, err := posts.FindAll(entity.Query{})
+	t.Run("should fail with: record not found", func(t *testing.T) {
+		_, err := posts.FindMany(object.PostQuery{})
 		if err == nil || err.Error() != "record not found" {
 			t.Error(err)
 		}
 	})
 }
 
-func TestPostRepository_SaveOne(t *testing.T) {
-	err := posts.SaveOne(&entity.Post{ ID: 1000 })
+func TestPostRepository_UpdateOne(t *testing.T) {
+	err := posts.UpdateOne(&testPost)
 	if err != nil {
 		t.Error(err)
 	}
