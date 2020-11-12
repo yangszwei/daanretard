@@ -1,7 +1,7 @@
 package attachment_test
 
 import (
-	"daanretard/internal/infrastructure/attachment"
+	"daanretard/internal/infrastructure/utilities/attachment"
 	"daanretard/internal/infrastructure/mock_persistence"
 	"testing"
 )

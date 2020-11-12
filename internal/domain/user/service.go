@@ -1,8 +1,8 @@
 package user
 
 import (
-	"daanretard/internal/infrastructure/security"
-	"daanretard/internal/infrastructure/validator"
+	"daanretard/internal/infrastructure/utilities/security"
+	"daanretard/internal/infrastructure/utilities/validator"
 	"daanretard/internal/object"
 	"errors"
 )

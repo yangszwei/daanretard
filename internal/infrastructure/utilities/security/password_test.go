@@ -1,7 +1,7 @@
 package security_test
 
 import (
-	"daanretard/internal/infrastructure/security"
+	"daanretard/internal/infrastructure/utilities/security"
 	"testing"
 )
 

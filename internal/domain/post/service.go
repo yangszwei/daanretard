@@ -1,7 +1,7 @@
 package post
 
 import (
-	"daanretard/internal/infrastructure/validator"
+	"daanretard/internal/infrastructure/utilities/validator"
 	"daanretard/internal/object"
 	"errors"
 	"strings"
