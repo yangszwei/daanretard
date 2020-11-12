@@ -14,13 +14,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func TestOpen(t *testing.T) {
-	var err error
 	DB, err = persistence.Open(os.Getenv("DB_DSN"))
 	if err != nil {
-		t.Fatal(err)
+		panic(err)
 	}
 }
 
