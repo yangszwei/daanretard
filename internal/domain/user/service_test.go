@@ -170,6 +170,54 @@ func TestService_MarkAsVerified(t *testing.T) {
 	})
 }
 
+func TestService_AddAdministrator(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		err := service.AddAdministrator(testUser.ID)
+		if err != nil {
+			t.Error(err)
+		}
+	})
+	t.Run("should fail with: record not found", func(t *testing.T) {
+		err := service.AddAdministrator(0)
+		if err == nil || err.Error() != "record not found" {
+			t.Error(err)
+		}
+	})
+}
+
+func TestService_IsAdministrator(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		isAdmin, err := service.IsAdministrator(testUser.ID)
+		if err != nil {
+			t.Error(err)
+		}
+		if !isAdmin {
+			t.Error(isAdmin)
+		}
+	})
+	t.Run("should fail with: record not found", func(t *testing.T) {
+		_, err := service.IsAdministrator(0)
+		if err == nil || err.Error() != "record not found" {
+			t.Error(err)
+		}
+	})
+}
+
+func TestService_RemoveAdministrator(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		err := service.RemoveAdministrator(testUser.ID)
+		if err != nil {
+			t.Error(err)
+		}
+	})
+	t.Run("should fail with: record not found", func(t *testing.T) {
+		err := service.RemoveAdministrator(0)
+		if err == nil || err.Error() != "record not found" {
+			t.Error(err)
+		}
+	})
+}
+
 func TestService_UpdateProfile(t *testing.T) {
 	t.Run("should succeed", func(t *testing.T) {
 		err := service.UpdateProfile(testUser.ID, object.UserProfileProps{
