@@ -1,8 +1,6 @@
 # 靠北大安4.0
 
-## Status
-
-work in progress
+:warning: This repository is not longer developed, and the project is now at https://github.com/yangszwei/daanretard
 
 ## Installation
 
