@@ -73,7 +73,7 @@ func (s *Service) Submit(post object.Post) (uint32, error) {
 	if !containsRequired(post) {
 		return 0, errors.New("invalid credentials")
 	}
-	if err := validator.Post(post) ; err != nil {
+	if err := validator.Post(post); err != nil {
 		return 0, err
 	}
 	post.Status = StatusSubmitted
@@ -93,7 +93,7 @@ func (s *Service) GetManyByUserID(id uint32, offset, limit int) ([]object.Post, 
 	records, err := s.r.FindMany(object.PostQuery{
 		UserID: id,
 		Offset: offset,
-		Limit: limit,
+		Limit:  limit,
 	})
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (s *Service) GetManyNotReviewed(offset, limit int) ([]object.Post, error) {
 	records, err := s.r.FindMany(object.PostQuery{
 		Status: StatusSubmitted,
 		Offset: offset,
-		Limit: limit,
+		Limit:  limit,
 	})
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func (s *Service) GetManyNotReviewed(offset, limit int) ([]object.Post, error) {
 }
 
 // MarkAsPublished mark a post as published
-func (s *Service) MarkAsPublished(id uint32) error  {
+func (s *Service) MarkAsPublished(id uint32) error {
 	post, err := s.r.FindOneByID(id)
 	if err != nil {
 		return err
@@ -137,7 +137,7 @@ func (s *Service) GetManyPublished(offset, limit int) ([]object.Post, error) {
 	records, err := s.r.FindMany(object.PostQuery{
 		Status: StatusPublished,
 		Offset: offset,
-		Limit: limit,
+		Limit:  limit,
 	})
 	if err != nil {
 		return nil, err
@@ -155,7 +155,7 @@ func (s *Service) Review(id uint32, review object.PostReview) error {
 	if err != nil {
 		return err
 	}
-	post.Review = toPost(object.Post{ Review: review }).Review
+	post.Review = toPost(object.Post{Review: review}).Review
 	err = s.r.UpdateOne(post)
 	return err
 }

@@ -9,13 +9,13 @@ import (
 )
 
 var (
-	service = post.NewService(mock_persistence.NewPostRepository())
+	service  = post.NewService(mock_persistence.NewPostRepository())
 	testPost = object.Post{
 		UserID:      1,
 		IPAddr:      net.ParseIP("127.0.0.1"),
 		UserAgent:   "test ua",
 		Message:     "test message",
-		Attachments: []string{ "1", "2", "3" },
+		Attachments: []string{"1", "2", "3"},
 		FacebookID:  "test id",
 	}
 )
@@ -36,10 +36,10 @@ func TestService_Submit(t *testing.T) {
 	})
 	t.Run("should fail with: invalid credentials #2", func(t *testing.T) {
 		_, err := service.Submit(object.Post{
-			UserID:      1,
-			IPAddr:      net.ParseIP("127.0.0.1"),
-			UserAgent:   "test ua",
-			Message:     string([]byte{ 60000: 1 }), // len() == 60001
+			UserID:    1,
+			IPAddr:    net.ParseIP("127.0.0.1"),
+			UserAgent: "test ua",
+			Message:   string([]byte{60000: 1}), // len() == 60001
 		})
 		if err == nil || err.Error() != "invalid credentials" {
 			t.Error(err)
@@ -92,9 +92,9 @@ func TestService_GetManyNotReviewed(t *testing.T) {
 func TestService_Review(t *testing.T) {
 	t.Run("should succeed", func(u *testing.T) {
 		err := service.Review(testPost.ID, object.PostReview{
-			UserID:    2,
-			Result:    3,
-			Message:   "test message",
+			UserID:  2,
+			Result:  3,
+			Message: "test message",
 		})
 		if err != nil {
 			t.Error(err)

@@ -17,5 +17,5 @@ func Open(dsn string) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DB{ conn }, nil
+	return &DB{conn}, nil
 }

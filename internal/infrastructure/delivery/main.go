@@ -16,9 +16,9 @@ func NewEngine() *Engine {
 // Engine shortcuts to gin.Engine
 type Engine struct {
 	engine *gin.Engine
-	root *gin.RouterGroup
-	views *gin.RouterGroup
-	api *gin.RouterGroup
+	root   *gin.RouterGroup
+	views  *gin.RouterGroup
+	api    *gin.RouterGroup
 }
 
 // ApplyMiddlewares setup router groups, should be called after using middlewares

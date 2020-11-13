@@ -8,18 +8,17 @@ import (
 )
 
 var (
-	service = user.NewService(mock_persistence.NewUserRepository())
+	service  = user.NewService(mock_persistence.NewUserRepository())
 	testUser = object.UserProps{
-		Email:      "user.service@example.com",
-		Password:   "12345678",
-		Profile:    object.UserProfileProps{
+		Email:    "user.service@example.com",
+		Password: "12345678",
+		Profile: object.UserProfileProps{
 			DisplayName: "User Service Test",
 			FirstName:   "User",
 			LastName:    "Service",
 		},
 	}
 )
-
 
 func TestService_Register(t *testing.T) {
 	t.Run("should succeed", func(t *testing.T) {
@@ -37,9 +36,9 @@ func TestService_Register(t *testing.T) {
 	})
 	t.Run("should fail with: invalid (2)", func(t *testing.T) {
 		_, err := service.Register(object.UserProps{
-			Email:      "test",
-			Password:   "test",
-			Profile:    object.UserProfileProps{
+			Email:    "test",
+			Password: "test",
+			Profile: object.UserProfileProps{
 				DisplayName: "test",
 				FirstName:   "test",
 				LastName:    "test",

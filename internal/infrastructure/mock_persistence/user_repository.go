@@ -16,8 +16,8 @@ func NewUserRepository() *UserRepository {
 
 // UserRepository implement user.IRepository
 type UserRepository struct {
-	count uint32
-	ids map[uint32]*user.User
+	count  uint32
+	ids    map[uint32]*user.User
 	emails map[string]*user.User
 }
 
@@ -39,7 +39,7 @@ func (u *UserRepository) InsertOne(user *user.User) error {
 
 // FindOneByID find a user by its ID
 func (u *UserRepository) FindOneByID(id uint32) (*user.User, error) {
-	if _, exist := u.ids[id] ; !exist {
+	if _, exist := u.ids[id]; !exist {
 		return nil, errors.New("record not found")
 	}
 	return u.ids[id], nil
@@ -47,7 +47,7 @@ func (u *UserRepository) FindOneByID(id uint32) (*user.User, error) {
 
 // FindOneByEmail find a user by its email
 func (u *UserRepository) FindOneByEmail(email string) (*user.User, error) {
-	if _, exist := u.emails[email] ; !exist {
+	if _, exist := u.emails[email]; !exist {
 		return nil, errors.New("record not found")
 	}
 	return u.emails[email], nil

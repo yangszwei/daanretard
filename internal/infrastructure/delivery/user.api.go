@@ -12,9 +12,9 @@ func apiUserRegister(s *application.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
 		id, err := s.User.Register(object.UserProps{
-			Email:      c.PostForm("email"),
-			Password:   c.PostForm("password"),
-			Profile:    object.UserProfileProps{
+			Email:    c.PostForm("email"),
+			Password: c.PostForm("password"),
+			Profile: object.UserProfileProps{
 				DisplayName: c.PostForm("display_name"),
 				FirstName:   c.PostForm("first_name"),
 				LastName:    c.PostForm("last_name"),

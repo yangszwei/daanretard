@@ -7,7 +7,7 @@ import (
 )
 
 // PrepareDelivery prepare delivery
-func PrepareDelivery(s *application.Services)(*delivery.Engine, error) {
+func PrepareDelivery(s *application.Services) (*delivery.Engine, error) {
 	e := delivery.NewEngine()
 	// middlewares
 	delivery.SetupSession(e, s, []byte(os.Getenv("SECRET")))

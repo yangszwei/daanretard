@@ -32,7 +32,7 @@ func (a *AttachmentRepository) AutoMigrate() error {
 
 // InsertOne add an attachment
 func (a *AttachmentRepository) InsertOne(name string) (uint32, error) {
-	attachment := AttachmentSchema{ Name: name }
+	attachment := AttachmentSchema{Name: name}
 	result := a.db.Create(&attachment)
 	return attachment.ID, result.Error
 }

@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	hash []byte
+	hash     []byte
 	password = "12345678"
 )
 

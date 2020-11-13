@@ -1,13 +1,13 @@
 package attachment_test
 
 import (
-	"daanretard/internal/infrastructure/utilities/attachment"
 	"daanretard/internal/infrastructure/mock_persistence"
+	"daanretard/internal/infrastructure/utilities/attachment"
 	"testing"
 )
 
 var (
-	id uint32
+	id      uint32
 	service = attachment.NewService(mock_persistence.NewAttachmentRepository())
 )
 

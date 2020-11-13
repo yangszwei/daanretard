@@ -7,9 +7,9 @@ import (
 )
 
 var testUser = user.User{
-	Email:      "persistence.user@example.com",
-	Password:   []byte("test password"),
-	Profile:    user.Profile{
+	Email:    "persistence.user@example.com",
+	Password: []byte("test password"),
+	Profile: user.Profile{
 		DisplayName: "persistence_user",
 		FirstName:   "Persistence",
 		LastName:    "User",

@@ -25,7 +25,7 @@ func (a *AttachmentRepository) InsertOne(name string) (uint32, error) {
 
 // FindOneByID find an attachment
 func (a *AttachmentRepository) FindOneByID(id uint32) (string, error) {
-	if name, exist := a.list[id] ; exist {
+	if name, exist := a.list[id]; exist {
 		return name, nil
 	}
 	return "", errors.New("record not found")

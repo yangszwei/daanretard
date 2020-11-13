@@ -17,12 +17,12 @@ func NewPostRepository() *PostRepository {
 // PostRepository implement post.IRepository
 type PostRepository struct {
 	count uint32
-	ids map[uint32]*post.Post
+	ids   map[uint32]*post.Post
 }
 
 // InsertOne insert a post
 func (p *PostRepository) InsertOne(post *post.Post) error {
-	if _, exist := p.ids[post.ID] ; exist {
+	if _, exist := p.ids[post.ID]; exist {
 		return errors.New("error 1062")
 	}
 	if post.ID == 0 {
@@ -35,7 +35,7 @@ func (p *PostRepository) InsertOne(post *post.Post) error {
 
 // FindOneByID find a pos by ID
 func (p *PostRepository) FindOneByID(id uint32) (*post.Post, error) {
-	if _, exist := p.ids[id] ; !exist {
+	if _, exist := p.ids[id]; !exist {
 		return nil, errors.New("record not found")
 	}
 	return p.ids[id], nil
@@ -44,7 +44,7 @@ func (p *PostRepository) FindOneByID(id uint32) (*post.Post, error) {
 // FindMany find posts by query
 func (p *PostRepository) FindMany(query object.PostQuery) ([]*post.Post, error) {
 	var (
-		records []*post.Post
+		records     []*post.Post
 		offsetCount = 0
 	)
 	for _, record := range p.ids {

@@ -8,10 +8,10 @@ import (
 
 var (
 	testUserRepo *mock_persistence.UserRepository
-	testUser = user.User{
-		Email:      "mock_persistence.user@example.com",
-		Password:   []byte("test password"),
-		Profile:    user.Profile{
+	testUser     = user.User{
+		Email:    "mock_persistence.user@example.com",
+		Password: []byte("test password"),
+		Profile: user.Profile{
 			DisplayName: "persistence_user",
 			FirstName:   "Persistence",
 			LastName:    "User",

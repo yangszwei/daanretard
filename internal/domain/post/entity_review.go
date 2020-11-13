@@ -4,10 +4,10 @@ import "time"
 
 // Review child entity of Post
 type Review struct {
-	PostID uint32 `gorm:"primaryKey"`
-	UserID uint32 `gorm:"index"`
-	Result uint8
-	Message string
+	PostID    uint32 `gorm:"primaryKey"`
+	UserID    uint32 `gorm:"index"`
+	Result    uint8
+	Message   string
 	CreatedAt time.Time
 }
 

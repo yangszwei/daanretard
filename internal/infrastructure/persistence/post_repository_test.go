@@ -16,11 +16,11 @@ var testPost = post.Post{
 	UserAgent:   "post_repository test",
 	Message:     "test message",
 	Attachments: "test_attachment_1,test_attachment_2",
-	Review:      post.Review{
+	Review: post.Review{
 		UserID: 10,
 		Result: 10,
 	},
-	FacebookID:  "12345",
+	FacebookID: "12345",
 }
 
 func TestPostRepository_AutoMigrate(t *testing.T) {

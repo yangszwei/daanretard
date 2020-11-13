@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	postValidator = validator.New()
+	postValidator       = validator.New()
 	postReviewValidator = validator.New()
 )
 

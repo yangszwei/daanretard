@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	posts = mock_persistence.NewPostRepository()
+	posts    = mock_persistence.NewPostRepository()
 	testPost = post.Post{
 		Status:      post.StatusPublished,
 		UserID:      1,
@@ -18,11 +18,11 @@ var (
 		UserAgent:   "post_repository test",
 		Message:     "test message",
 		Attachments: "test_attachment_1,test_attachment_2",
-		Review:      post.Review{
+		Review: post.Review{
 			UserID: 10,
 			Result: 10,
 		},
-		FacebookID:  "12345",
+		FacebookID: "12345",
 	}
 )
 

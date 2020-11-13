@@ -7,7 +7,7 @@ import (
 
 var (
 	attachments = mock_persistence.NewAttachmentRepository()
-	id uint32
+	id          uint32
 )
 
 func TestAttachmentRepository_InsertOne(t *testing.T) {

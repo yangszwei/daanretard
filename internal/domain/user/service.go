@@ -69,12 +69,14 @@ func (s *Service) Register(props object.UserProps) (uint32, error) {
 	if !containsRequired(props) {
 		return 0, errors.New("invalid credentials")
 	}
-	if err := validator.User(props) ; err != nil {
+	if err := validator.User(props); err != nil {
 		return 0, err
 	}
 	user, err := toUser(props)
-	if err != nil { panic(err) }
-	if _, err := s.r.FindOneByEmail(props.Email) ; err != nil {
+	if err != nil {
+		panic(err)
+	}
+	if _, err := s.r.FindOneByEmail(props.Email); err != nil {
 		err = s.r.InsertOne(user)
 		return user.ID, err
 	}
@@ -124,8 +126,8 @@ func (s *Service) UpdateEmail(id uint32, email string) error {
 	if err != nil {
 		return err
 	}
-	changes := object.UserProps{ Email: email }
-	if err := validator.User(changes) ; err != nil {
+	changes := object.UserProps{Email: email}
+	if err := validator.User(changes); err != nil {
 		return err
 	}
 	u.Email = email
@@ -140,8 +142,8 @@ func (s *Service) UpdatePassword(id uint32, password string) error {
 	if err != nil {
 		return err
 	}
-	changes := object.UserProps{ Password: password }
-	if err := validator.User(changes) ; err != nil {
+	changes := object.UserProps{Password: password}
+	if err := validator.User(changes); err != nil {
 		return err
 	}
 	u.Password, err = security.GenerateFromPassword(password)
@@ -200,10 +202,10 @@ func (s *Service) UpdateProfile(id uint32, profile object.UserProfileProps) erro
 	if err != nil {
 		return err
 	}
-	if err := validator.UserProfile(profile) ; err != nil {
+	if err := validator.UserProfile(profile); err != nil {
 		return err
 	}
-	user, err := toUser(object.UserProps{ Profile: profile })
+	user, err := toUser(object.UserProps{Profile: profile})
 	if err != nil {
 		return err
 	}

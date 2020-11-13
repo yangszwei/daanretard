@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	userValidator = validator.New()
+	userValidator        = validator.New()
 	userProfileValidator = validator.New()
 )
 
