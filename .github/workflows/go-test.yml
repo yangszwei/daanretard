@@ -28,4 +28,4 @@ jobs:
       - name: Copy .env file
         run: cp .github/.env .env
       - name: Test
-        run: go test ./...
+        run: go test ./... --tags=github
