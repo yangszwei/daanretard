@@ -1,6 +1,7 @@
 # 靠北大安4.0 (daanretard)
 
 ![build](https://github.com/yangszwei/daanretard/workflows/Go%20Test/badge.svg)
+[![](https://img.shields.io/badge/status-under%20development-blue)](https://img.shields.io/badge/status-under%20development-blue)
 [![](https://tokei.rs/b1/github/yangszwei/daanretard)](https://github.com/yangszwei/daanretard)
 
 靠北大安4.0投稿系統
