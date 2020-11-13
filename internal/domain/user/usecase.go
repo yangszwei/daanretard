@@ -11,9 +11,6 @@ type IUsecase interface {
 	UpdateEmail(id uint32, email string) error
 	UpdatePassword(id uint32, password string) error
 	MarkAsVerified(id uint32) error
-	AddAdministrator(id uint32) error
-	IsAdministrator(id uint32) (bool, error)
-	RemoveAdministrator(id uint32) error
 	UpdateProfile(id uint32, profile object.UserProfileProps) error
 	Delete(id uint32) error
 }

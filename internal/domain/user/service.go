@@ -165,37 +165,6 @@ func (s *Service) MarkAsVerified(id uint32) error {
 	return err
 }
 
-// AddAdministrator mark user as an administrator
-func (s *Service) AddAdministrator(id uint32) error {
-	u, err := s.r.FindOneByID(id)
-	if err != nil {
-		return err
-	}
-	u.IsAdministrator = true
-	err = s.r.UpdateOne(u)
-	return err
-}
-
-// IsAdministrator return whether user is an administrator
-func (s *Service) IsAdministrator(id uint32) (bool, error) {
-	u, err := s.r.FindOneByID(id)
-	if err != nil {
-		return false, err
-	}
-	return u.IsAdministrator, nil
-}
-
-// RemoveAdministrator mark user as an administrator
-func (s *Service) RemoveAdministrator(id uint32) error {
-	u, err := s.r.FindOneByID(id)
-	if err != nil {
-		return err
-	}
-	u.IsAdministrator = false
-	err = s.r.UpdateOne(u)
-	return err
-}
-
 // Update profile validate and set user profile
 func (s *Service) UpdateProfile(id uint32, profile object.UserProfileProps) error {
 	u, err := s.r.FindOneByID(id)
