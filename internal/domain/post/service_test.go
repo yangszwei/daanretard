@@ -108,7 +108,7 @@ func TestService_Review(t *testing.T) {
 	})
 }
 
-func TestService_Publish(t *testing.T) {
+func TestService_MarkAsPublished(t *testing.T) {
 	t.Run("should succeed", func(t *testing.T) {
 		err := service.MarkAsPublished(testPost.ID, "fb post id")
 		if err != nil {
