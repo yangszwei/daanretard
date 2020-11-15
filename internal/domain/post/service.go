@@ -123,12 +123,13 @@ func (s *Service) GetManyNotReviewed(offset, limit int) ([]object.Post, error) {
 }
 
 // MarkAsPublished mark a post as published
-func (s *Service) MarkAsPublished(id uint32) error {
+func (s *Service) MarkAsPublished(id uint32, fbPostID string) error {
 	post, err := s.r.FindOneByID(id)
 	if err != nil {
 		return err
 	}
 	post.Status = StatusPublished
+	post.FacebookID = fbPostID
 	return s.r.UpdateOne(post)
 }
 

@@ -108,15 +108,15 @@ func TestService_Review(t *testing.T) {
 	})
 }
 
-func TestService_MarkAsPublished(t *testing.T) {
-	t.Run("shold succeed", func(t *testing.T) {
-		err := service.MarkAsPublished(testPost.ID)
+func TestService_Publish(t *testing.T) {
+	t.Run("should succeed", func(t *testing.T) {
+		err := service.MarkAsPublished(testPost.ID, "fb post id")
 		if err != nil {
 			t.Error(err)
 		}
 	})
 	t.Run("should fail with: record not found", func(t *testing.T) {
-		err := service.MarkAsPublished(0)
+		err := service.MarkAsPublished(0, "fb post id")
 		if err == nil || err.Error() != "record not found" {
 			t.Error(err)
 		}
