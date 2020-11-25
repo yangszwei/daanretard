@@ -9,7 +9,7 @@
 ## Prerequisite
 
 - go1.15
-- mariaDB or any database supported by [https://github.com/go-gorm/mysql](https://github.com/go-gorm/mysql)
+- refer to [https://github.com/go-gorm/mysql](https://github.com/go-gorm/mysql) (tested with mariaDB)
 - facebook graph api app
 
 ## Install
