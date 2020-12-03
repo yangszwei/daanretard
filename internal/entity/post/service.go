@@ -24,7 +24,7 @@ type IUsecase interface {
 func toObject(p Post) object.Post {
 	var attachments []uint32
 	for _, a := range strings.Split(p.Attachments, ",") {
-		mediaID, _ := strconv.Atoi(a)
+		mediaID, _ := strconv.ParseUint(a, 10, 32)
 		attachments = append(attachments, uint32(mediaID))
 	}
 	return object.Post{
