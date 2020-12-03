@@ -9,7 +9,6 @@ require (
 	github.com/huandu/facebook/v2 v2.5.2
 	github.com/jessevdk/go-assets v0.0.0-20160921144138-4f4301a06e15
 	github.com/joho/godotenv v1.3.0
-	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	gorm.io/driver/mysql v1.0.2
 	gorm.io/gorm v1.20.2
 )
