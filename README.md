@@ -22,7 +22,7 @@ Make
 ```
 
 - Run `make build`
-- An file named "daanretard" should be created
+- A file named "daanretard" should be created
 
 > NOTE: You may want to rename daanretard to daanretard.exe on Windows system
 
