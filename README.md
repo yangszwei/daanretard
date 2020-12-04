@@ -11,20 +11,36 @@
 - MySQL database (refer to [https://github.com/go-gorm/mysql](https://github.com/go-gorm/mysql))
 - Facebook Graph API App (refer to [https://developers.facebook.com/docs/graph-api/reference/application/](https://developers.facebook.com/docs/graph-api/reference/application/))
 
-## Install
+## Build
 
-(at project root)
+- Prerequisite
 
-- Create .env file:
-
-```.env
-ADDR=
-DATA=
-SECRET=
-FB_APP_ID=
-FB_APP_SECRET=
-DB_DSN= 
+```
+Yarn
+Go 1.15+
+Make
 ```
 
 - Run `make build`
-- Run `./daanretard`
+- An file named "daanretard" should be created
+
+> NOTE: You may want to rename daanretard to daanretard.exe on Windows system
+
+## Install
+
+- Create data folder if you want to create folder with custom permission (default is 0755)
+- Run `./daanretard` or `./daanretard.exe`
+
+## Config
+
+You may create one in advance or after starting the app
+
+```env
+ADDR=
+SECRET=
+DATA_PATH=
+FB_PAGE_ID=
+FB_GRAPH_APP_ID=
+FB_GRAPH_APP_SECRET=
+DB_DSN=
+```
