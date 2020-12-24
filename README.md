@@ -24,8 +24,6 @@ Make
 - Run `make build`
 - A file named "daanretard" should be created
 
-> NOTE: You may want to rename daanretard to daanretard.exe on Windows system
-
 ## Install
 
 - Create data folder if you want to create folder with custom permission (default is 0755)
