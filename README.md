@@ -1,3 +1,3 @@
 # 靠北大安4.0
 
-:warning: The project has moved to https://github.com/yangszwei/daanretard
+:warning: This branch contains the previous version of code that is no longer developed.
